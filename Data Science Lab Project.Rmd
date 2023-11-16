@@ -1,0 +1,201 @@
+---
+title: "Data Science Lab Project"
+author: "Pasquale Gravante & Antonio Mastroianni"
+date: "2023-10-12"
+output: pdf_document
+---
+
+# Loading libraries 
+
+```{r}
+library(dplyr)
+```
+
+# Loading data
+
+```{r}
+survey_data <- read.csv("~/Downloads/FINANCIAL LITERACY BANCA ITALIA/Dati Ricerca BI.csv")
+```
+
+# Data pre-processing
+
+We create 3 different kind of scores and then we sum them up to obtain a unique financial literacy score.
+
+## Financial behaviour score
+
+```{r}
+
+# Create the Financial literacy score
+
+survey_data$financial_literacy_score <- 0
+
+# Rule 1: 1 point if personally or jointly responsible for money management AND actively keeping track of money - Financial behaviours
+
+rule_1 <- as.numeric((survey_data$qf1 %in% c(1, 2) & survey_data$qf2 == 1))
+
+```
+
+```{r}
+
+# Rule 2: 1 point for any type of active saving (QF3_1 - QF3_99) - Financial behaviours
+
+## Create a variable for active saving based on QF3_1 - QF3_99
+
+active_saving_qf3 <- ifelse(rowSums(survey_data[, grep("^qf3_", names(survey_data))], na.rm = TRUE) >= 1 & survey_data$qf3_8 != 1 & survey_data$qf3_99 != 1, 1, 0)
+
+## Creating the rule variable
+
+rule_2 <- as.numeric(survey_data$active_saving_qf3 == 1)
+
+```
+
+```{r}
+
+# Rule 3: 1 point if no borrowing to make ends meet - Financial behaviours
+
+rule_3 <- with(survey_data, ifelse(qf11 == 0, 1, 
+                                   ifelse(qf11 == 1 & !(qf12_3_e == 1 | qf12_3_f == 1 | qf12_3_g == 1 | 
+                                                         qf12_4_k == 1 | qf12_4_l == 1 | qf12_5_m == 1 | 
+                                                         qf12_5_o == 1 | qf12_6_p == 1 | qf12_6_q == 1 | qf12_99 == 1 | qf12_97 == 1),1,0)))
+
+```
+
+```{r}
+
+# Rule 4: Financial behaviour - Choosing products
+
+## Intermediate variable QP_D1
+
+qp_d1 <- as.numeric(survey_data$qprod2 %in% c(1, 4))
+
+## Create the intermediate variable qp_d2
+
+qp_d2 <- rep(0, nrow(survey_data))
+
+### Check rows where qprod2 is 1 or 4
+
+rows_to_check <- survey_data$qprod2 %in% c(1, 4)
+
+### Check variables for value 1 in the first set (answers that give 2 points)
+
+qp_d2[rows_to_check] <- ifelse(
+  rowSums(survey_data[rows_to_check, c("qprod3_2", "qprod3_3", "qprod3_4", "qprod3_5", "qprod3_6", "qprod3_7", "qprod3_8", "qprod3_10")], na.rm = TRUE) > 0,
+  2,
+  0
+)
+
+### Check variables for value 1 in the second set (answers that give 1 point)
+
+qp_d2[rows_to_check & qp_d2 == 0] <- ifelse(
+  rowSums(survey_data[rows_to_check & qp_d2 == 0, c("qprod3_1", "qprod3_9", "qprod3_11", "qprod3_12", "qprod3_13", "qprod3_14", "qprod3_15", "qprod3_16", "qprod3_17", "qprod3_18")], na.rm = TRUE) > 0,
+  1,
+  0
+)
+
+## Create the rule_4 variable and assign values based on intermediate variables scores
+
+rule_4 <- ifelse(qp_d2 == 2, 2, ifelse(qp_d1 == 1 | qp_d2 == 1, 1, 0))
+
+```
+
+```{r}
+# Creating Rule 5 - Financial behaviours
+
+rule_5 <- ifelse(survey_data$qf10_6 %in% c(1, 2) & survey_data$qf10_7 %in% c(1, 2), 2,
+                             ifelse(survey_data$qf10_6 %in% c(1, 2) | survey_data$qf10_7 %in% c(1, 2), 1, 0))
+```
+
+```{r}
+# Creating Rule 6 - Financial behaviours
+
+rule_6 <- ifelse(survey_data$qf10_1 %in% c(1, 2) & survey_data$qf10_4 %in% c(1, 2), 2,
+                             ifelse(survey_data$qf10_1 %in% c(1, 2) | survey_data$qf10_4 %in% c(1, 2), 1, 0))
+```
+
+```{r}
+
+# Summing up rules to get the financial behaviour score (goes from 0 to 9)
+
+survey_data$financial_behaviour_score = rowSums(cbind(rule_1, rule_2, rule_3, rule_4, rule_5, rule_6))
+```
+
+
+## Financial Knowledge score
+
+```{r}
+rule_7 <- as.numeric(survey_data$qk3 == 3)
+```
+
+```{r}
+rule_8 <- as.numeric(survey_data$qk4 == 0)
+```
+
+```{r}
+rule_9 <- as.numeric(survey_data$qk5 == 102)
+```
+
+```{r}
+rule_10 <- as.numeric(survey_data$qk5 == 102 & survey_data$qk6 == 1)
+```
+
+```{r}
+rule_11 <- as.numeric(survey_data$qk7_1 == 1)
+```
+
+```{r}
+rule_12 <- as.numeric(survey_data$qk7_2 == 1)
+```
+
+```{r}
+rule_13 <- as.numeric(survey_data$qk7_3 == 1)
+```
+
+### Summing up the rules to create the score
+
+```{r}
+survey_data$financial_knowledge_score = rowSums(cbind(rule_7, rule_8, rule_9, rule_10, rule_11, rule_12, rule_13))
+```
+
+## Financial attitude score
+
+### Recoding some variables 
+
+```{r}
+# Specify the columns to be recoded
+columns_to_recode <- c("qf10_1", "qf10_2", "qf10_3", "qf10_4", "qf10_5", "qf10_6", "qf10_7", "qf10_8", "qf10_9", "qf10_10", "qf10_11", "qf10_12")
+
+# Recode -97, -98, -99 as 3 in the specified columns
+survey_data[columns_to_recode] <- lapply(survey_data[columns_to_recode], function(x) ifelse(x %in% c(-97, -98, -99), 3, x))
+```
+
+### Creating the rule
+
+```{r}
+# Specify the columns for rescaling
+columns_to_rescale <- c("qf10_2", "qf10_8")
+
+# Create a temporary data frame for rescaled values
+temp_data <- survey_data
+
+# Rescale values from 1 to 5 to 0 to 4 in the temporary data frame
+temp_data[columns_to_rescale] <- temp_data[columns_to_rescale] - 1
+
+# Calculate the average and store it in rule_14
+temp_data$rule_14temp <- rowMeans(temp_data[columns_to_rescale], na.rm = TRUE)
+rule_14 = temp_data$rule_14temp
+```
+
+### Adding the score to the Financial Attitude score to the dataset
+
+```{r}
+survey_data$financial_attitude_score = rule_14
+```
+
+## Getting the final **Financial literacy score**
+
+```{r}
+
+survey_data$financial_literacy_score <- rowSums(survey_data[, c("financial_behaviour_score", "financial_attitude_score", "financial_knowledge_score")], na.rm = TRUE)
+
+```
+
