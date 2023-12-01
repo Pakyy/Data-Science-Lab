@@ -1,6 +1,6 @@
----
+----
 title: "Data Science Lab Project"
-author: "Pasquale Gravante & Antonio Mastroianni"
+author: "Pasquale Gravante & Antonio Mastroianni & Angelo Giuseppe Limone & Pasquale Formicola"
 date: "2023-10-12"
 output: pdf_document
 ---
@@ -8,7 +8,20 @@ output: pdf_document
 # Loading libraries 
 
 ```{r}
+library(corrplot)
+library(survey)
 library(dplyr)
+library(jtools)
+library(factoextra)
+library(ggplot2)
+library(GGally)
+library(cluster)
+library(fpc)
+library(reshape2)
+library(caret)
+library(MASS)
+library(stats)
+library(FactoMineR)
 ```
 
 # Loading data
@@ -45,7 +58,7 @@ active_saving_qf3 <- ifelse(rowSums(survey_data[, grep("^qf3_", names(survey_dat
 
 ## Creating the rule variable
 
-rule_2 <- as.numeric(survey_data$active_saving_qf3 == 1)
+rule_2 <- as.numeric(active_saving_qf3 == 1)
 
 ```
 
@@ -199,3 +212,521 @@ survey_data$financial_literacy_score <- rowSums(survey_data[, c("financial_behav
 
 ```
 
+
+# CORRELATION ANALYSIS
+
+
+## Checking for missing data
+
+```{r}
+sum(is.na(survey_data$qd1))
+sum(is.na(survey_data$AREA5))
+sum(is.na(survey_data$QD5b))
+sum(is.na(survey_data$QD7))
+sum(is.na(survey_data$QD9))
+sum(is.na(survey_data$QD10))
+sum(is.na(survey_data$QD12))
+```
+
+There are no missing data in the demographic variables
+
+## Creating the correlation matrix
+
+```{r}
+
+# Define the survey design
+design <- svydesign(ids = ~1, data = survey_data, weights = ~pesofitc)
+
+# Select relevant variables for analysis
+dem_vars <- c("financial_literacy_score", "qd1", "AREA5", "qd5b", "qd7", "qd9", "qd10", "qd12")
+
+# Calculate the survey-weighted correlation matrix
+weighted_corr <- svycor(~ financial_literacy_score + qd1 + AREA5 + qd5b + qd7 + qd9 + qd10 + qd12, design)
+
+# Visualize the correlation matrix
+corrplot::corrplot(weighted_corr$cors, method = "color")
+```
+
+```{r}
+# Example for the elbow method
+pca_data <- survey_data[, c("financial_literacy_score", "qd1", "AREA5", "qd5b", "qd7", "qd9", "qd10", "qd12")]
+
+# Scale the data for PCA
+scaled_data <- scale(pca_data)
+wss <- numeric(10)
+for (i in 1:10) {
+  kmeans_result <- kmeans(scaled_data, centers = i, nstart = 10)
+  wss[i] <- kmeans_result$tot.withinss
+}
+plot(1:10, wss, type = "b", main = "Elbow Method", xlab = "Number of Clusters", ylab = "Within Sum of Squares")
+```
+
+```{r}
+silhouette_vec <- numeric(10)
+for (i in 2:10) {
+  kmeans_result <- kmeans(scaled_data, centers = i, nstart = 10)
+  cluster_stats <- cluster.stats(dist(scaled_data), kmeans_result$cluster)
+  silhouette_vec[i] <- cluster_stats$avg.silwidth
+}
+
+plot(2:10, silhouette_vec[-1], type = "b", main = "Silhouette Method", xlab = "Number of Clusters", ylab = "Average Silhouette Width")
+```
+
+```{r}
+clusters <- kmeans(survey_data[, dem_vars], centers = 5)  # Choose an appropriate number of clusters
+survey_data$cluster_label <- as.factor(clusters$cluster)
+summary(survey_data$cluster_label)
+```
+
+```{r}
+# Perform PCA
+pca_result <- prcomp(scaled_data, center = TRUE, scale. = TRUE)
+
+# Extract the principal components
+pc_scores <- as.data.frame(pca_result$x[, 1:2])
+
+# Combine the PC scores with the cluster labels
+pca_data <- cbind(pc_scores, cluster_label = survey_data$cluster_label)
+
+# Scatter plot with different colors for each cluster
+ggplot(pca_data, aes(x = PC1, y = PC2, color = factor(cluster_label))) +
+  geom_point() +
+  labs(title = "PCA Scatter Plot with Clusters",
+       x = "Principal Component 1",
+       y = "Principal Component 2") +
+  theme_minimal()
+```
+
+```{r}
+# Extract the variable loadings
+loadings <- pca_result$rotation[, 1:2]
+
+# Create a dataframe with variable names and loadings for PC1
+pc1_loadings <- data.frame(variable = rownames(loadings), loading = loadings[, 1])
+
+# Create a dataframe with variable names and loadings for PC2
+pc2_loadings <- data.frame(variable = rownames(loadings), loading = loadings[, 2])
+
+# Order the dataframes by the absolute values of loadings
+pc1_loadings <- pc1_loadings[order(abs(pc1_loadings$loading), decreasing = TRUE), ]
+pc2_loadings <- pc2_loadings[order(abs(pc2_loadings$loading), decreasing = TRUE), ]
+
+# Visualize the top contributing variables for PC1
+ggplot(pc1_loadings, aes(x = reorder(variable, loading), y = loading)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = "Top Contributing Variables for PC1",
+       x = "Variable",
+       y = "Loading") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Visualize the top contributing variables for PC2
+ggplot(pc2_loadings, aes(x = reorder(variable, loading), y = loading)) +
+  geom_bar(stat = "identity", fill = "lightcoral", color = "black") +
+  labs(title = "Top Contributing Variables for PC2",
+       x = "Variable",
+       y = "Loading") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+## Chage the numerical values indicating the geographic area of Italy into the respective names of the areas.
+
+```{r}
+survey_data_temp <- survey_data
+survey_data <- survey_data %>%
+  mutate(AREA5 = case_when(
+    AREA5 == 1 ~ "North-West",
+    AREA5 == 2 ~ "North-East",
+    AREA5 == 3 ~ "Centre",
+    AREA5 == 4 ~ "South",
+    AREA5 == 5 ~ "Isles" 
+  ))
+
+survey_data <- survey_data %>%
+  mutate(qd1 = case_when(
+    qd1 == "0" ~ "Female",
+    qd1 == "1" ~ "Male"
+  ))
+```
+
+
+```{r}
+# Change variable names
+survey_data <- survey_data %>%
+  rename(
+    gender = qd1,
+    household_members = qd5b,
+    age = qd7,
+    education = qd9,
+    employment_status = qd10,
+    birth_country = qd12
+  )
+```
+
+
+# EDA
+
+```{r}
+
+#distribution of the population
+
+ggplot(survey_data, aes(x = age)) +
+  geom_density(fill = "skyblue", color = "black", alpha = 0.7) +
+  geom_vline(aes(xintercept = mean(age), color = "Mean Age"), linetype = "dashed") +
+  labs(title = "Density Plot of Age with Mean Highlighted",
+       x = "Age",
+       y = "Density",
+       color = "Legend") +
+  scale_color_manual(values = c("red"), labels = c("Mean Age")) +
+  theme_minimal()
+```
+
+
+```{r}
+
+#Geographic areas relative frequencies
+
+table(survey_data$AREA5)
+prop.table(table(survey_data$AREA5))
+```
+
+```{r}
+table(survey_data$household_members)
+prop.table(table(survey_data$household_members))
+```
+
+
+```{r}
+#geographic areas pie-chart
+
+areas <- data.frame(prop.table(table(survey_data$AREA5))*100)
+
+ggplot(areas, aes(x = "", y = Freq, fill = Var1)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  ggtitle("Geographical distribution of the participants") +
+  geom_text(aes(label = sprintf("%.1f%%", Freq)), position = position_stack(vjust = 0.5)) +
+  theme(axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank())
+```
+
+```{r}
+ggplot(survey_data, aes(x = as.character(education))) + 
+  geom_bar(aes(y = ..prop.., group = 1), fill = 'darkorange', width = 0.6) +
+  labs(title = " Distribution of Educational qualification",
+       x = '',
+       y = '%') +
+  scale_x_discrete(labels = c("1" = "University-level",
+                              "3" = "Complete secondary",
+                              "4" = "Some secondary",
+                              "5" = "Complete primary",
+                              "6" = "Some primary",
+                              "7" = "No education"))
+```
+
+```{r}
+ggplot(survey_data, aes(x = as.character(employment_status))) + 
+  geom_bar(aes(y = ..prop.., group = 1), fill = 'darkorange', width = 0.6) +
+  labs(title = " Distribution of Employment status",
+       x = '',
+       y = '%') +
+  scale_x_discrete(labels = c("1" = "Self-Employed",
+                              "2" = "In paid employment",
+                              "4" = "Looking after home",
+                              "5" = "Looking for job",
+                              "6" = "Retired",
+                              "9" = "Student",
+                              "10" = "Other"))+
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+```{r}
+sq3sum <- data.frame(value=apply(survey_data[,5:11],2,sum))
+sq3sum$key=rownames(sq3sum)
+ggplot(data=sq3sum, aes(x=key, y=value, fill=key)) +
+geom_bar(colour="white", stat="identity", width= 0.6) +
+  labs(title = 'Saving habits',
+       x = '',
+       y = '')+
+  scale_x_discrete(labels = c("qf3_1" = "",
+                              "qf3_3" = "",
+                              "qf3_4" = "",
+                              "qf3_6" = "",
+                              "qf3_7" = "",
+                              "qf3_8" = "",
+                              "qf3_99" = ""))+
+  theme(axis.text.x = element_text(angle = 70, hjust=1, size = 7)) +
+  scale_fill_discrete(name = 'Habits', labels = c("Saving cash at home or in wallet", 
+                                                  "Paying money into a savings account",
+                                                  "Giving money to family",
+                                                  "Buying financial investment products",
+                                                  "Or in some other way",
+                                                  "Has not been actively saving",
+                                                  "No answer"))
+```
+
+```{r}
+qf9sum <- data.frame(value=apply(survey_data[,14:24],2,sum))
+qf9sum$key=rownames(qf9sum)
+ggplot(data=qf9sum, aes(x=key, y=value, fill=key)) +
+geom_bar(colour="white", stat="identity", width= 0.6) +
+  labs(title = 'Retirement funding plans',
+       x = '',
+       y = '')+
+  scale_x_discrete(labels = c("qf9_1" = "",
+                              "qf9_2" = "",
+                              "qf9_3" = "",
+                              "qf9_4" = "",
+                              "qf9_5" = "",
+                              "qf9_6" = "",
+                              "qf9_7" = "",
+                              "qf9_8" = "",
+                              "qf9_9" = "",
+                              "qf9_10" = "",
+                              "qf9_99" = ""))+
+  theme(axis.text.x = element_text(angle = 70, hjust=1, size = 7)) +
+  scale_fill_discrete(name = 'Habits', labels = c("Drawing a government pension/old-age benefit", 
+                                                  "From an occupational or workplace pension plan",
+                                                  "From a private pension plan",
+                                                  "From selling your financial assets",
+                                                  "From selling your non-financial assets",
+                                                  "From income generated by your financial or non-financial assets",
+                                                  "By relying on a spouse or partner to support you",
+                                                  "By relying on your children or other family members to support you",
+                                                  "Survivor’s pension",
+                                                  "Other",
+                                                  "No answer"))
+```
+
+```{r}
+qprod1csum <- data.frame(value=apply(survey_data[,25:36],2,sum))
+qprod1csum$key=rownames(qprod1csum)
+ggplot(data=qprod1csum, aes(x=key, y=value, fill=key)) +
+geom_bar(colour="white", stat="identity", width= 0.6) +
+  labs(title = 'Most bought financial products',
+       x = '',
+       y = '')+
+  scale_x_discrete(labels = c("qprod1c_1" = "",
+                              "qprod1c_2" = "",
+                              "qprod1c_3" = "",
+                              "qprod1c_5" = "",
+                              "qprod1c_6" = "",
+                              "qprod1c_7" = "",
+                              "qprod1c_8" = "",
+                              "qprod1c_10" = "",
+                              "qprod1c_11" = "",
+                              "qprod1c_12" = "",
+                              "qprod1c_14" = "",
+                              "qprod1c_99" = ""))+
+  theme(axis.text.x = element_text(angle = 70, hjust=1, size = 7)) +
+  scale_fill_discrete(name = 'Habits', labels = c("Pension or retirement product", 
+                                                  "Investment account such as a unit trust",
+                                                  "Mortgage or a bank loan secured on a property",
+                                                  "unsecured bank loan or a salary/pension-backed
+loan",
+                                                  "credit card",
+                                                  "current/checking account",
+                                                  "savings account",
+                                                  "Insurance",
+                                                  "Stocks and shares",
+                                                  "Bonds",
+                                                  "A prepaid debit card/ payment card",
+                                                  "No answer"))
+
+```
+
+
+```{r}
+
+# Check if there is a linear relationship between financial literacy score and the demographic covariates
+
+literacy_score_model <- lm(financial_literacy_score ~ gender + as.factor(household_members) + age + as.factor(education) + as.factor(employment_status) + as.factor(birth_country) + AREA5, survey_data[,c(99,100,101,102,103,104,106,107,108,109,110)])
+summary(literacy_score_model)
+
+```
+
+```{r}
+
+# Visualize the scores 
+
+literacy_score_model <- lm(formula = financial_literacy_score ~ gender + as.factor(household_members) + 
+    age + as.factor(education) + as.factor(employment_status) + 
+    as.factor(birth_country) + AREA5, data = survey_data[, c(99, 
+    100, 101, 102, 103, 104, 106, 107, 108, 109, 110)])
+summary(literacy_score_model)
+```
+
+```{r}
+plot(survey_data$age,
+     literacy_score_model$residuals)
+```
+
+```{r}
+boxplot(literacy_score_model$residuals ~ survey_data$gender, main = "Residuals by gender")
+boxplot(literacy_score_model$residuals ~ as.factor(survey_data$household_members), main = "Residuals by household members")
+boxplot(literacy_score_model$residuals ~ as.factor(survey_data$education), main = "Residuals by education")
+boxplot(literacy_score_model$residuals ~ as.factor(survey_data$employment_status), main = "Residuals by empolyment status")
+# A linear model is not able to predict financial literacy score.
+```
+
+# Divisione in classi
+
+```{r}
+dem_data = survey_data_temp[, dem_vars]
+dem_data <- dem_data %>%
+  rename(
+    gender = qd1,
+    household_members = qd5b,
+    age = qd7,
+    education = qd9,
+    employment_status = qd10,
+    birth_country = qd12,
+    area = AREA5)
+```
+
+```{r}
+dem_data <- dem_data %>%
+  mutate(gender = case_when(
+    gender == "0" ~ "Female",
+    gender == "1" ~ "Male"
+  ))
+```
+
+```{r}
+dem_data <- dem_data %>%
+  mutate(area = case_when(
+    area == 1 ~ "North",
+    area == 2 ~ "North",
+    area == 3 ~ "Centre",
+    area == 4 ~ "South",
+    area == 5 ~ "Isles" 
+  ))
+```
+
+
+```{r}
+dem_data <- dem_data %>%
+  mutate(household_members = case_when(
+    household_members == 1 ~ "Little to Medium",
+    household_members == 2 ~ "Little to Medium",
+    household_members == 3 ~ "Little to Medium",
+    household_members == 4 ~ "Little to Medium",
+    household_members == 5 ~ "Big",
+    household_members == 6 ~ "Big"
+  ))
+```
+
+```{r}
+# Define breaks for categorization
+age_breaks <- c(18, 34, 60, Inf)
+
+# Apply cut function to create age categories
+dem_data$age <- cut(dem_data$age, breaks = age_breaks, labels = c("18-34", "35-60", "61+"), include.lowest = TRUE)
+```
+
+```{r}
+dem_data <- dem_data %>%
+  mutate(education = case_when(
+    education == 1 ~ "University level Education",
+    education == 3 ~ "Average Education",
+    education == 4 ~ "Average Education",
+    education == 5 ~ "Low Education",
+    education == 6 ~ "Low Education",
+    education == 7 ~ "Low Education"
+  ))
+```
+
+```{r}
+dem_data <- dem_data %>%
+  mutate(birth_country = case_when(
+    birth_country == "0" ~ "Other",
+    birth_country == "1" ~ "Italy"
+  ))
+```
+
+```{r}
+dem_data <- dem_data %>%
+  mutate(employment_status = case_when(
+    employment_status == 1 ~ "Self Employed",
+    employment_status == 2 ~ "In paid employement",
+    employment_status == 4 ~ "Looking after the home",
+    employment_status == 5 ~ "Looking for work",
+    employment_status == 6 ~ "Retired",
+    employment_status == 9 ~ "Student",
+    employment_status == 10 ~ "Other"
+  ))
+```
+
+```{r}
+# Define breaks for financial literacy score categories
+score_breaks <- c(0, 7.9, 13.9, Inf)
+
+# Apply cut function to create score categories
+dem_data$financial_literacy_score_classes <- cut(dem_data$financial_literacy_score, breaks = score_breaks, labels = c("Low Financial Score", "Medium Financial Score", "High Financial Score"), include.lowest = TRUE)
+```
+
+
+# ANOVA E PCA
+
+```{r}
+#MODELLI CON WEIGHTS
+
+# Esegui un'ANOVA 
+modello_anova <- aov(financial_literacy_score ~ education, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova)
+
+# Esegui un'ANOVA
+modello_anova2 <- aov(financial_literacy_score ~ gender, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova2)
+
+# Esegui un'ANOVA
+modello_anova3 <- aov(financial_literacy_score ~ area, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova3)
+
+# Esegui un'ANOVA
+modello_anova4 <- aov(financial_literacy_score ~ household_members, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova4)
+
+# Esegui un'ANOVA
+modello_anova5 <- aov(financial_literacy_score ~ age, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova5)
+
+# Esegui un'ANOVA
+modello_anova6 <- aov(financial_literacy_score ~ employment_status, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova6)
+
+# Esegui un'ANOVA
+modello_anova7 <- aov(financial_literacy_score ~ birth_country, data = dem_data, weights = survey_data$pesofitc)
+summary(modello_anova7)
+```
+
+
+```{r}
+
+# Esempio di dati PCA
+dati_pca <- survey_data_temp[, c('financial_literacy_score', 'qd1', 'AREA5', 'qd5b', 'qd7', 'qd9', 'qd10', 'qd12')]
+
+# Esegui l'analisi delle componenti principali (PCA)
+pca_result <- prcomp(dati_pca, scale. = TRUE, weights = survey_data$pesofitc)
+
+# Estrai i risultati della PCA
+scores <- as.data.frame(pca_result$x)
+
+# Crea un DataFrame con i punteggi e aggiungi una colonna per l'etichetta dell'osservazione
+df_pca <- cbind(scores, osservazione = rownames(scores))
+
+# In this graph we can see that the first two dimensions explain more or less the 37% of variance.
+fviz_eig(pca_result,addlabels = TRUE)
+
+# We have the contributions of the variables to the two dimensions: in the first one, the variables qd7, qd5b and qd9 have a contributions of more than 10%, while in the second one the variables with high contributions are financial literacy score, AREA5, qd10 and qd9.
+
+fviz_contrib(pca_result, choice = "var", axes = 1)
+fviz_contrib(pca_result, choice = "var", axes = 2)
+
+# The same explanation for the previous graphs can be see here.
+fviz_pca_var(pca_result, col.var="contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE)
+
+# The same explanation for the previous graphs can be see here the dots are the individuals mapped on bidimensional space of PCA, while cos2represents the quality of their mapping expressed through a gradient of colors. If they are more blue, more their mapping is good. Among the previous graph, we have the adding of individuals, while the lines are equal. 
+fviz_pca_biplot(pca_result,geom.ind ='point',col.ind = 'cos2',repel = TRUE,palette = 'jco',gradient.cols = "RdYlBu")
+```
