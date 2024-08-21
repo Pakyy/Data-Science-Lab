@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pasquale Gravante">
+<meta name="dcterms.date" content="2024-07-10">
+
+<title>Data Science Lab Project</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Data Science Lab Project_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Data Science Lab Project_files/libs/quarto-html/quarto.js"></script>
+<script src="Data Science Lab Project_files/libs/quarto-html/popper.min.js"></script>
+<script src="Data Science Lab Project_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Data Science Lab Project_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Data Science Lab Project_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Data Science Lab Project_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Data Science Lab Project_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Data Science Lab Project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Data Science Lab Project_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">INTRODUCTION</a>
+  <ul class="collapse">
+  <li><a href="#dataset-description" id="toc-dataset-description" class="nav-link" data-scroll-target="#dataset-description">Dataset description</a></li>
+  <li><a href="#idea-and-motivations" id="toc-idea-and-motivations" class="nav-link" data-scroll-target="#idea-and-motivations">Idea and motivations</a></li>
+  <li><a href="#aim-of-the-project" id="toc-aim-of-the-project" class="nav-link" data-scroll-target="#aim-of-the-project">Aim of the project</a></li>
+  </ul></li>
+  <li><a href="#data-pre-processing" id="toc-data-pre-processing" class="nav-link" data-scroll-target="#data-pre-processing">DATA PRE-PROCESSING</a>
+  <ul class="collapse">
+  <li><a href="#cleaning" id="toc-cleaning" class="nav-link" data-scroll-target="#cleaning">Cleaning</a></li>
+  <li><a href="#data-manipulation" id="toc-data-manipulation" class="nav-link" data-scroll-target="#data-manipulation">Data Manipulation</a></li>
+  <li><a href="#feature-engineering" id="toc-feature-engineering" class="nav-link" data-scroll-target="#feature-engineering">Feature engineering</a></li>
+  </ul></li>
+  <li><a href="#eda" id="toc-eda" class="nav-link" data-scroll-target="#eda">EDA</a>
+  <ul class="collapse">
+  <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables">Tables</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#visualizations" id="toc-visualizations" class="nav-link" data-scroll-target="#visualizations">Visualizations</a></li>
+  </ul></li>
+  <li><a href="#modeling" id="toc-modeling" class="nav-link" data-scroll-target="#modeling">MODELING</a>
+  <ul class="collapse">
+  <li><a href="#research-question-1" id="toc-research-question-1" class="nav-link" data-scroll-target="#research-question-1">Research question 1</a></li>
+  <li><a href="#research-question-2" id="toc-research-question-2" class="nav-link" data-scroll-target="#research-question-2">Research question 2</a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
+  <li><a href="#research-question-3" id="toc-research-question-3" class="nav-link" data-scroll-target="#research-question-3">Research question 3</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Science Lab Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pasquale Gravante </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 10, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
+<h1>INTRODUCTION</h1>
+<section id="dataset-description" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-description">Dataset description</h2>
+<p>The dataset used in this project, provided by Banca d’Italia, is a comprehensive survey on financial literacy among Italian adults. The survey, part of an OECD initiative, aims to create an internationally comparable dataset to evaluate financial literacy and inclusion. It includes approximately 2,500 respondents who were interviewed using two different methods: face-to-face interviews and tablet-based responses. The dataset contains detailed socio-demographic information, financial knowledge scores, behavioral data on financial practices, and attitudes towards financial management. Key variables include gender, age, educational qualification, employment status, geographic location, and various aspects of financial behavior and attitudes.</p>
+</section>
+<section id="idea-and-motivations" class="level2">
+<h2 class="anchored" data-anchor-id="idea-and-motivations">Idea and motivations</h2>
+<p>Financial literacy is a critical factor for individual and household economic well-being. Despite the importance of financial knowledge, many individuals struggle with understanding basic financial concepts, which can lead to poor financial decisions and increased financial vulnerability.</p>
+<p>The motivation behind this project is to analyze the current state of financial literacy in Italy, identify key factors influencing it, and develop targeted strategies to improve financial education. By leveraging this rich dataset, we can gain insights into the financial behaviors and attitudes of different demographic groups and understand how financial literacy impacts their financial decision-making.</p>
+</section>
+<section id="aim-of-the-project" class="level2">
+<h2 class="anchored" data-anchor-id="aim-of-the-project">Aim of the project</h2>
+<p>The primary aim of this project is to assess and improve financial literacy among Italian adults by conducting an analysis of the provided dataset. Specifically, the project has the following objectives:</p>
+<p><strong>Assess the Current Level of Financial Literacy</strong>: Evaluate the financial literacy scores across various demographic groups to understand the disparities and identify areas needing improvement.</p>
+<p><strong>Identify Key Influencing Factors</strong>: Determine the socio-demographic and economic factors that significantly impact financial literacy and financial behaviors.</p>
+<p><strong>Examine Financial Resilience</strong>: Analyze how different levels of financial literacy affect the ability of individuals to manage financial shocks and unexpected expenses.</p>
+<p><strong>Explore Financial Decision-Making</strong>: Investigate the relationship between financial literacy and the quality of financial decisions, such as investment choices and debt management.</p>
+<p><strong>Investigate Regional Disparities:</strong> Assess regional differences in financial literacy and access to financial education resources to identify areas where interventions are most needed.</p>
+</section>
+</section>
+<section id="data-pre-processing" class="level1">
+<h1>DATA PRE-PROCESSING</h1>
+<p>In this section the necessary data and libraries are imported:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(NbClust)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arules)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arulesViz)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forcats)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"Dati Ricerca BI.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="cleaning">Cleaning</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">104</span>,<span class="dv">105</span>)]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"Q"</span>), as.factor))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>AREA5 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>AREA5)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"q"</span>), <span class="sc">~</span> <span class="fu">fct_recode</span>(., <span class="at">NULL =</span> <span class="st">"-99"</span>, <span class="at">NULL =</span> <span class="st">"_99"</span>)))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>qd7 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qd7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-manipulation" class="level2">
+<h2 class="anchored" data-anchor-id="data-manipulation">Data Manipulation</h2>
+<p>Creation of an age group variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    qd7 <span class="sc">&lt;</span> <span class="dv">18</span> <span class="sc">~</span> <span class="st">'under_18'</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    qd7 <span class="sc">&gt;=</span> <span class="dv">18</span> <span class="sc">&amp;</span> qd7 <span class="sc">&lt;</span> <span class="dv">30</span> <span class="sc">~</span> <span class="st">'18_29'</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    qd7 <span class="sc">&gt;=</span> <span class="dv">30</span> <span class="sc">&amp;</span> qd7 <span class="sc">&lt;</span> <span class="dv">45</span> <span class="sc">~</span> <span class="st">'30_44'</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    qd7 <span class="sc">&gt;=</span> <span class="dv">45</span> <span class="sc">&amp;</span> qd7 <span class="sc">&lt;</span> <span class="dv">60</span> <span class="sc">~</span> <span class="st">'45_59'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    qd7 <span class="sc">&gt;=</span> <span class="dv">60</span> <span class="sc">~</span> <span class="st">'60+'</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">as.factor</span>(age))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Grouping regions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    AREA5 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">~</span> <span class="st">'North'</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    AREA5 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">'Centre'</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    AREA5 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>) <span class="sc">~</span> <span class="st">'South &amp; Islands'</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">as.factor</span>(region))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Sex variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sex =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    qd1 <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">'Female'</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    qd1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">'Male'</span>)) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sex =</span> <span class="fu">as.factor</span>(sex))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Education variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">education =</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    qd9 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'6'</span>, <span class="st">'7'</span>) <span class="sc">~</span> <span class="st">'No education'</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    qd9 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'5'</span>, <span class="st">'4'</span>) <span class="sc">~</span> <span class="st">'Primary education'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    qd9 <span class="sc">==</span> <span class="st">'3'</span> <span class="sc">~</span> <span class="st">'Secondary education'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    qd9 <span class="sc">==</span> <span class="st">'1'</span> <span class="sc">~</span> <span class="st">'University'</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">education =</span> <span class="fu">factor</span>(education, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'No education'</span>, <span class="st">'Primary education'</span>, <span class="st">'Secondary education'</span>, <span class="st">'University'</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Employment variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">employment =</span> <span class="fu">case_when</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    qd10 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">~</span> <span class="st">'Employed'</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    qd10 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>) <span class="sc">~</span> <span class="st">'Not in labor force'</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    qd10 <span class="sc">==</span> <span class="dv">6</span> <span class="sc">~</span> <span class="st">'Retired'</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    qd10 <span class="sc">==</span> <span class="dv">9</span> <span class="sc">~</span> <span class="st">'Student'</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">employment =</span> <span class="fu">factor</span>(employment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'Employed'</span>, <span class="st">'Not in labor force'</span>, <span class="st">'Retired'</span>, <span class="st">'Student'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">Feature engineering</h2>
+<section id="interaction-variables" class="level3">
+<h3 class="anchored" data-anchor-id="interaction-variables">Interaction variables</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">inter_education_employment =</span> <span class="fu">interaction</span>(education, employment)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">inter_sex_employment =</span> <span class="fu">interaction</span>(sex, employment)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">inter_sex_education =</span> <span class="fu">interaction</span>(sex, education)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">inter_region_education =</span> <span class="fu">interaction</span>(region, education)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">inter_age_education =</span> <span class="fu">interaction</span>(age, education)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">inter_age_region =</span> <span class="fu">interaction</span>(age, region)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="financial-behavior-score" class="level3">
+<h3 class="anchored" data-anchor-id="financial-behavior-score">Financial behavior score</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rule 1: 1 point if personally or jointly responsible for money management AND actively keeping track of money</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>rule_1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>((df<span class="sc">$</span>qf1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">&amp;</span> df<span class="sc">$</span>qf2 <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Rule 2: 1 point for any type of active saving (QF3_1 - QF3_99)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"qf3_"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(.))))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>active_saving_qf3 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">rowSums</span>(df[, <span class="fu">grep</span>(<span class="st">"^qf3_"</span>, <span class="fu">names</span>(df))], <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">&amp;</span> df<span class="sc">$</span>qf3_8 <span class="sc">!=</span> <span class="dv">1</span> <span class="sc">&amp;</span> df<span class="sc">$</span>qf3_99 <span class="sc">!=</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>rule_2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(active_saving_qf3 <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Rule 3: 1 point if no borrowing to make ends meet</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>rule_3 <span class="ot">&lt;-</span> <span class="fu">with</span>(df, <span class="fu">ifelse</span>(qf11 <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">1</span>, </span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">ifelse</span>(qf11 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> <span class="sc">!</span>(qf12_3_e <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_3_f <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_3_g <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> </span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                                                         qf12_4_k <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_4_l <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_5_m <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                                                         qf12_5_o <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_6_p <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_6_q <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_99 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qf12_97 <span class="sc">==</span> <span class="dv">1</span>),<span class="dv">1</span>,<span class="dv">0</span>)))</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Rule 4: Choosing products</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>qp_d1 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qprod2 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>qp_d2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(df))</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>rows_to_check <span class="ot">&lt;-</span> df<span class="sc">$</span>qprod2 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="do">### Check variables for value 1 in the first set (answers that give 2 points)</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(<span class="st">"qprod3_2"</span>, <span class="st">"qprod3_3"</span>, <span class="st">"qprod3_4"</span>, <span class="st">"qprod3_5"</span>, <span class="st">"qprod3_6"</span>, <span class="st">"qprod3_7"</span>, <span class="st">"qprod3_8"</span>, <span class="st">"qprod3_10"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(.))))</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>qp_d2[rows_to_check] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowSums</span>(df[rows_to_check, <span class="fu">c</span>(<span class="st">"qprod3_2"</span>, <span class="st">"qprod3_3"</span>, <span class="st">"qprod3_4"</span>, <span class="st">"qprod3_5"</span>, <span class="st">"qprod3_6"</span>, <span class="st">"qprod3_7"</span>, <span class="st">"qprod3_8"</span>, <span class="st">"qprod3_10"</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>,</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  <span class="dv">0</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="do">### Check variables for value 1 in the second set (answers that give 1 point)</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(<span class="st">"qprod3_1"</span>, <span class="st">"qprod3_9"</span>, <span class="st">"qprod3_11"</span>, <span class="st">"qprod3_12"</span>, <span class="st">"qprod3_13"</span>, <span class="st">"qprod3_14"</span>, <span class="st">"qprod3_15"</span>, <span class="st">"qprod3_16"</span>, <span class="st">"qprod3_17"</span>, <span class="st">"qprod3_18"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(.))))</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>qp_d2[rows_to_check <span class="sc">&amp;</span> qp_d2 <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowSums</span>(df[rows_to_check <span class="sc">&amp;</span> qp_d2 <span class="sc">==</span> <span class="dv">0</span>, <span class="fu">c</span>(<span class="st">"qprod3_1"</span>, <span class="st">"qprod3_9"</span>, <span class="st">"qprod3_11"</span>, <span class="st">"qprod3_12"</span>, <span class="st">"qprod3_13"</span>, <span class="st">"qprod3_14"</span>, <span class="st">"qprod3_15"</span>, <span class="st">"qprod3_16"</span>, <span class="st">"qprod3_17"</span>, <span class="st">"qprod3_18"</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>,</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>  <span class="dv">0</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="do">## Create the rule_4 variable and assign values based on intermediate variables scores</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>rule_4 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(qp_d2 <span class="sc">==</span> <span class="dv">2</span>, <span class="dv">2</span>, <span class="fu">ifelse</span>(qp_d1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> qp_d2 <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating Rule 5</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>rule_5 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>qf10_6 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">&amp;</span> df<span class="sc">$</span>qf10_7 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dv">2</span>,</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">ifelse</span>(df<span class="sc">$</span>qf10_6 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">|</span> df<span class="sc">$</span>qf10_7 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating Rule 6 - Financial behaviours</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>rule_6 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>qf10_1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">&amp;</span> df<span class="sc">$</span>qf10_4 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dv">2</span>,</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">ifelse</span>(df<span class="sc">$</span>qf10_1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">|</span> df<span class="sc">$</span>qf10_4 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a><span class="co"># Summing up rules to get the financial behaviour score (goes from 0 to 9)</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fin_behaviour_score <span class="ot">=</span> <span class="fu">rowSums</span>(<span class="fu">cbind</span>(rule_1, rule_2, rule_3, rule_4, rule_5, rule_6), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="financial-knowledge-score" class="level3">
+<h3 class="anchored" data-anchor-id="financial-knowledge-score">Financial knowledge score</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rule_7 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk3 <span class="sc">==</span> <span class="dv">3</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>rule_8 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk4 <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>rule_9 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk5 <span class="sc">==</span> <span class="dv">102</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>rule_10 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk5 <span class="sc">==</span> <span class="dv">102</span> <span class="sc">&amp;</span> df<span class="sc">$</span>qk6 <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>rule_11 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk7_1 <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>rule_12 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk7_2 <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>rule_13 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df<span class="sc">$</span>qk7_3 <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="do">### Summing up the rules to create the score</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fin_knowledge_score <span class="ot">=</span> <span class="fu">rowSums</span>(<span class="fu">cbind</span>(rule_7, rule_8, rule_9, rule_10, rule_11, rule_12, rule_13), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="financial-attitude-score" class="level3">
+<h3 class="anchored" data-anchor-id="financial-attitude-score">Financial attitude score</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify the columns to be recoded</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>columns_to_recode <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"qf10_1"</span>, <span class="st">"qf10_2"</span>, <span class="st">"qf10_3"</span>, <span class="st">"qf10_4"</span>, <span class="st">"qf10_5"</span>, <span class="st">"qf10_6"</span>, <span class="st">"qf10_7"</span>, <span class="st">"qf10_8"</span>, <span class="st">"qf10_9"</span>, <span class="st">"qf10_10"</span>, <span class="st">"qf10_11"</span>, <span class="st">"qf10_12"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(columns_to_recode), as.factor))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(columns_to_recode), <span class="sc">~</span> <span class="fu">fct_na_value_to_level</span>(<span class="fu">fct_recode</span>(., <span class="st">`</span><span class="at">3</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"-97"</span>), <span class="at">level =</span> <span class="st">"3"</span>)))</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="do">### Creating the rule</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify the columns for rescaling</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>columns_to_rescale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"qf10_2"</span>, <span class="st">"qf10_8"</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a temporary data frame for rescaled values</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>temp_data <span class="ot">&lt;-</span> df[columns_to_rescale]</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>temp_data<span class="sc">$</span>qf10_2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(temp_data<span class="sc">$</span>qf10_2)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>temp_data<span class="sc">$</span>qf10_8 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(temp_data<span class="sc">$</span>qf10_8)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Rescale values from 1 to 5 to 0 to 4 in the temporary data frame</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>temp_data <span class="ot">&lt;-</span> temp_data <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the average and store it in rule_14</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>temp_data<span class="sc">$</span>rule_14temp <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(temp_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>rule_14 <span class="ot">=</span> temp_data<span class="sc">$</span>rule_14temp</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fin_attitude_score <span class="ot">=</span> rule_14</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="financial-literacy-score" class="level3">
+<h3 class="anchored" data-anchor-id="financial-literacy-score">Financial literacy score</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fin_literacy_score <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(df[, <span class="fu">c</span>(<span class="st">"fin_behaviour_score"</span>, <span class="st">"fin_attitude_score"</span>, <span class="st">"fin_knowledge_score"</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Creating categories:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create categories for the fin_literacy_score</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fin_lit_category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    fin_literacy_score <span class="sc">&lt;</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    fin_literacy_score <span class="sc">&lt;</span> <span class="dv">8</span> <span class="sc">~</span> <span class="st">"Very Low"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    fin_literacy_score <span class="sc">&lt;</span> <span class="dv">12</span> <span class="sc">~</span> <span class="st">"Average"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    fin_literacy_score <span class="sc">&lt;</span> <span class="dv">16</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    fin_literacy_score <span class="sc">&gt;=</span> <span class="dv">16</span> <span class="sc">~</span> <span class="st">"Very High"</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to factor with ordered levels</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fin_lit_category <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>fin_lit_category, </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Very Low"</span>, <span class="st">"Low"</span>, <span class="st">"Average"</span>, <span class="st">"High"</span>, <span class="st">"Very High"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="eda" class="level1">
+<h1>EDA</h1>
+<section id="tables" class="level2">
+<h2 class="anchored" data-anchor-id="tables">Tables</h2>
+<p>In this section the dataset is going to be explored:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(education), <span class="sc">!</span><span class="fu">is.na</span>(employment))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table for age_group</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>age_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(age) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Age"</span>, <span class="st">"Count"</span>), <span class="at">caption =</span> <span class="st">"Distribution of Age Groups"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table for education</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>education_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(education) <span class="sc">%&gt;%</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Education Level"</span>, <span class="st">"Count"</span>), <span class="at">caption =</span> <span class="st">"Distribution of Education Levels"</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table for region</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>region_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">%&gt;%</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Region"</span>, <span class="st">"Count"</span>), <span class="at">caption =</span> <span class="st">"Distribution of Regions"</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table for employment_status</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>employment_status_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(employment) <span class="sc">%&gt;%</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Employment Status"</span>, <span class="st">"Count"</span>), <span class="at">caption =</span> <span class="st">"Distribution of Employment Status"</span>)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>sex_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex) <span class="sc">%&gt;%</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Gender"</span>, <span class="st">"Count"</span>), <span class="at">caption =</span> <span class="st">"Distribution of Genders"</span>)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the tables</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(age_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Distribution of Age Groups
+
+|Age      | Count|
+|:--------|-----:|
+|18_29    |   540|
+|30_44    |   667|
+|45_59    |   517|
+|60+      |   154|
+|under_18 |   477|</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(education_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Distribution of Education Levels
+
+|Education Level     | Count|
+|:-------------------|-----:|
+|No education        |    26|
+|Primary education   |   884|
+|Secondary education |   916|
+|University          |   529|</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(region_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Distribution of Regions
+
+|Region          | Count|
+|:---------------|-----:|
+|Centre          |   454|
+|North           |  1109|
+|South &amp; Islands |   792|</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(employment_status_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Distribution of Employment Status
+
+|Employment Status  | Count|
+|:------------------|-----:|
+|Employed           |  1130|
+|Not in labor force |   493|
+|Retired            |   571|
+|Student            |   161|</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sex_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Distribution of Genders
+
+|Gender | Count|
+|:------|-----:|
+|Female |  1198|
+|Male   |  1157|</code></pre>
+</div>
+</div>
+</section>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
+</section>
+<section id="visualizations" class="level2">
+<h2 class="anchored" data-anchor-id="visualizations">Visualizations</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> fin_lit_category)) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Financial Literacy Categories"</span>, <span class="at">x =</span> <span class="st">"Financial Literacy Category"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> fin_literacy_score)) <span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"lightcoral"</span>) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Financial Literacy Scores by Age Group"</span>, <span class="at">x =</span> <span class="st">"Age Group"</span>, <span class="at">y =</span> <span class="st">"Financial Literacy Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> education, <span class="at">y =</span> fin_literacy_score)) <span class="sc">+</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Financial Literacy Scores by Education Level"</span>, <span class="at">x =</span> <span class="st">"Education Level"</span>, <span class="at">y =</span> <span class="st">"Financial Literacy Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> employment, <span class="at">y =</span> fin_literacy_score)) <span class="sc">+</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"lightgreen"</span>) <span class="sc">+</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Financial Literacy Scores by Employment"</span>, <span class="at">x =</span> <span class="st">"Employment"</span>, <span class="at">y =</span> <span class="st">"Financial Literacy Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> sex, <span class="at">y =</span> fin_literacy_score)) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"orange"</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Financial Literacy Scores by Sex"</span>, <span class="at">x =</span> <span class="st">"Sex"</span>, <span class="at">y =</span> <span class="st">"Financial Literacy Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> region, <span class="at">y =</span> fin_literacy_score)) <span class="sc">+</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Financial Literacy Scores by Region"</span>, <span class="at">x =</span> <span class="st">"Region"</span>, <span class="at">y =</span> <span class="st">"Financial Literacy Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="modeling" class="level1">
+<h1>MODELING</h1>
+<section id="research-question-1" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-1">Research question 1</h2>
+<p>Understanding the determinants of financial literacy through ordinal regression can inform policymakers and educators about:</p>
+<ul>
+<li><p>Targeted educational programs for specific demographic groups.</p></li>
+<li><p>Effective policy measures to improve financial literacy across different population segments.</p></li>
+<li><p>Allocation of resources in areas where interventions are most needed.</p></li>
+</ul>
+<section id="ordinal-regression" class="level3">
+<h3 class="anchored" data-anchor-id="ordinal-regression">Ordinal regression</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the ordinal regression model</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>ord_model <span class="ot">&lt;-</span> <span class="fu">polr</span>(fin_lit_category <span class="sc">~</span> age <span class="sc">+</span> education <span class="sc">+</span> region <span class="sc">+</span> employment <span class="sc">+</span> sex, <span class="at">data =</span> df, <span class="at">Hess =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the model</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ord_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+polr(formula = fin_lit_category ~ age + education + region + 
+    employment + sex, data = df, Hess = TRUE)
+
+Coefficients:
+                                Value Std. Error t value
+age30_44                      0.30555    0.10864  2.8125
+age45_59                      0.40819    0.16668  2.4489
+age60+                        0.23265    0.22385  1.0393
+ageunder_18                  -0.17656    0.13329 -1.3246
+education.L                   1.45323    0.26326  5.5201
+education.Q                  -0.30050    0.19608 -1.5325
+education.C                   0.03059    0.10277  0.2977
+regionNorth                   0.23977    0.10542  2.2743
+regionSouth &amp; Islands        -0.01426    0.11211 -0.1272
+employmentNot in labor force -0.44756    0.10990 -4.0723
+employmentRetired            -0.04048    0.16242 -0.2492
+employmentStudent            -0.52058    0.18729 -2.7796
+sexMale                       0.10172    0.07992  1.2728
+
+Intercepts:
+               Value   Std. Error t value
+Very Low|Low   -0.5761  0.1588    -3.6272
+Low|Average    -0.4299  0.1586    -2.7107
+Average|High    1.5576  0.1616     9.6372
+High|Very High  4.1034  0.1989    20.6339
+
+Residual Deviance: 5751.404 
+AIC: 5785.404 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate p-values for the model coefficients</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>coeftest <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ord_model))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(coeftest[, <span class="st">"t value"</span>]), <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine coefficients and p-values into a data frame</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>ord_model_results <span class="ot">&lt;-</span> <span class="fu">cbind</span>(coeftest, <span class="st">"p value"</span> <span class="ot">=</span> p_values)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the results</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ord_model_results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                   Value Std. Error    t value      p value
+age30_44                      0.30555242  0.1086395  2.8125360 4.915252e-03
+age45_59                      0.40818604  0.1666846  2.4488528 1.433120e-02
+age60+                        0.23264635  0.2238521  1.0392862 2.986716e-01
+ageunder_18                  -0.17656066  0.1332928 -1.3246080 1.853012e-01
+education.L                   1.45322683  0.2632601  5.5201190 3.387702e-08
+education.Q                  -0.30050056  0.1960831 -1.5325161 1.253951e-01
+education.C                   0.03059236  0.1027669  0.2976869 7.659422e-01
+regionNorth                   0.23976534  0.1054218  2.2743433 2.294535e-02
+regionSouth &amp; Islands        -0.01425987  0.1121089 -0.1271966 8.987848e-01
+employmentNot in labor force -0.44755900  0.1099028 -4.0723179 4.654759e-05
+employmentRetired            -0.04048372  0.1624227 -0.2492492 8.031680e-01
+employmentStudent            -0.52057810  0.1872865 -2.7795810 5.442907e-03
+sexMale                       0.10171613  0.0799183  1.2727514 2.031063e-01
+Very Low|Low                 -0.57609536  0.1588262 -3.6272071 2.865035e-04
+Low|Average                  -0.42990535  0.1585971 -2.7106753 6.714634e-03
+Average|High                  1.55758033  0.1616215  9.6372115 5.567993e-22
+High|Very High                4.10335460  0.1988646 20.6339169 1.361618e-94</code></pre>
+</div>
+</div>
+<section id="interpretation" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation"><strong>Interpretation</strong></h4>
+</section>
+</section>
+<section id="linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="linear-regression">Linear regression</h3>
+<section id="regional-disparities-model" class="level4">
+<h4 class="anchored" data-anchor-id="regional-disparities-model">Regional disparities model</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">=</span> <span class="fu">lm</span>(fin_literacy_score <span class="sc">~</span> region <span class="sc">*</span> education <span class="sc">+</span> </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                        region <span class="sc">*</span> employment <span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                        age <span class="sc">+</span> sex, <span class="at">data =</span> df)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = fin_literacy_score ~ region * education + region * 
+    employment + age + sex, data = df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-11.1354  -2.1425  -0.0656   2.1423   9.4957 
+
+Coefficients:
+                                                   Estimate Std. Error t value
+(Intercept)                                         9.44784    0.81164  11.640
+regionNorth                                        -0.80769    0.86109  -0.938
+regionSouth &amp; Islands                              -0.63000    0.84547  -0.745
+education.L                                         1.16324    2.09709   0.555
+education.Q                                         0.23061    1.56253   0.148
+education.C                                        -0.29707    0.72992  -0.407
+employmentNot in labor force                       -0.92486    0.40133  -2.305
+employmentRetired                                  -0.36296    0.44349  -0.818
+employmentStudent                                  -0.86841    0.60219  -1.442
+age30_44                                            0.34300    0.18077   1.897
+age45_59                                            0.51371    0.27412   1.874
+age60+                                             -0.01509    0.37350  -0.040
+ageunder_18                                        -0.58290    0.22004  -2.649
+sexMale                                             0.21474    0.13280   1.617
+regionNorth:education.L                             3.05297    2.23239   1.368
+regionSouth &amp; Islands:education.L                   1.22344    2.17015   0.564
+regionNorth:education.Q                            -1.87680    1.66379  -1.128
+regionSouth &amp; Islands:education.Q                  -0.43738    1.61947  -0.270
+regionNorth:education.C                             0.95442    0.78455   1.217
+regionSouth &amp; Islands:education.C                   0.21742    0.77102   0.282
+regionNorth:employmentNot in labor force            0.40633    0.48522   0.837
+regionSouth &amp; Islands:employmentNot in labor force  0.29189    0.47781   0.611
+regionNorth:employmentRetired                       0.53076    0.45913   1.156
+regionSouth &amp; Islands:employmentRetired             0.58075    0.50917   1.141
+regionNorth:employmentStudent                      -0.50290    0.71085  -0.707
+regionSouth &amp; Islands:employmentStudent             0.41346    0.72110   0.573
+                                                   Pr(&gt;|t|)    
+(Intercept)                                         &lt; 2e-16 ***
+regionNorth                                         0.34835    
+regionSouth &amp; Islands                               0.45626    
+education.L                                         0.57916    
+education.Q                                         0.88268    
+education.C                                         0.68406    
+employmentNot in labor force                        0.02128 *  
+employmentRetired                                   0.41320    
+employmentStudent                                   0.14941    
+age30_44                                            0.05789 .  
+age45_59                                            0.06105 .  
+age60+                                              0.96777    
+ageunder_18                                         0.00813 ** 
+sexMale                                             0.10602    
+regionNorth:education.L                             0.17158    
+regionSouth &amp; Islands:education.L                   0.57297    
+regionNorth:education.Q                             0.25943    
+regionSouth &amp; Islands:education.Q                   0.78712    
+regionNorth:education.C                             0.22391    
+regionSouth &amp; Islands:education.C                   0.77797    
+regionNorth:employmentNot in labor force            0.40245    
+regionSouth &amp; Islands:employmentNot in labor force  0.54134    
+regionNorth:employmentRetired                       0.24780    
+regionSouth &amp; Islands:employmentRetired             0.25416    
+regionNorth:employmentStudent                       0.47935    
+regionSouth &amp; Islands:employmentStudent             0.56645    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.084 on 2329 degrees of freedom
+Multiple R-squared:  0.09203,   Adjusted R-squared:  0.08229 
+F-statistic: 9.443 on 25 and 2329 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>None of the interaction terms between region and education or region and employment are statistically significant. This suggests that:</p>
+<ul>
+<li><p>The effect of education on financial literacy does not significantly differ across regions.</p></li>
+<li><p>The impact of employment status on financial literacy is relatively consistent across regions.</p></li>
+</ul>
+</section>
+<section id="gender-and-socioeconomic-interaction-model" class="level4">
+<h4 class="anchored" data-anchor-id="gender-and-socioeconomic-interaction-model">Gender and Socioeconomic Interaction Model</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>lm2 <span class="ot">=</span> <span class="fu">lm</span>(fin_literacy_score <span class="sc">~</span> sex <span class="sc">*</span> education <span class="sc">+</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                        sex <span class="sc">*</span> employment <span class="sc">+</span> </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                        sex <span class="sc">*</span> age <span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                        region, <span class="at">data =</span> df)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = fin_literacy_score ~ sex * education + sex * employment + 
+    sex * age + region, data = df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-10.7866  -2.2068  -0.1625   2.1559  10.2169 
+
+Coefficients:
+                                     Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                           9.05868    0.33490  27.049  &lt; 2e-16 ***
+sexMale                              -0.30140    0.42310  -0.712  0.47631    
+education.L                           1.64731    0.63008   2.614  0.00899 ** 
+education.Q                          -0.25692    0.47033  -0.546  0.58495    
+education.C                           0.05148    0.24563   0.210  0.83401    
+employmentNot in labor force         -0.51716    0.22760  -2.272  0.02317 *  
+employmentRetired                    -0.12650    0.36472  -0.347  0.72875    
+employmentStudent                    -0.71690    0.45271  -1.584  0.11342    
+age30_44                              0.36020    0.24698   1.458  0.14486    
+age45_59                              0.43939    0.35779   1.228  0.21955    
+age60+                               -0.19798    0.49462  -0.400  0.68900    
+ageunder_18                          -0.47383    0.30435  -1.557  0.11964    
+regionNorth                           0.37956    0.17208   2.206  0.02750 *  
+regionSouth &amp; Islands                -0.08451    0.18348  -0.461  0.64511    
+sexMale:education.L                   2.36899    0.86444   2.740  0.00618 ** 
+sexMale:education.Q                  -0.75344    0.64652  -1.165  0.24399    
+sexMale:education.C                   0.20842    0.34042   0.612  0.54043    
+sexMale:employmentNot in labor force -0.87067    0.38804  -2.244  0.02494 *  
+sexMale:employmentRetired             0.61886    0.54383   1.138  0.25526    
+sexMale:employmentStudent            -0.53328    0.61830  -0.863  0.38850    
+sexMale:age30_44                     -0.05502    0.35944  -0.153  0.87836    
+sexMale:age45_59                     -0.07299    0.55517  -0.131  0.89541    
+sexMale:age60+                        0.17460    0.75106   0.232  0.81620    
+sexMale:ageunder_18                  -0.03174    0.44174  -0.072  0.94273    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.071 on 2331 degrees of freedom
+Multiple R-squared:  0.09866,   Adjusted R-squared:  0.08976 
+F-statistic: 11.09 on 23 and 2331 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="interpretation-of-interactions" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-interactions">Interpretation of Interactions</h3>
+<ul>
+<li><p>Sex and Education:</p>
+<ul>
+<li>The positive interaction between male and education.L (2.36899) suggests that the positive effect of education on financial literacy is stronger for males than for females.</li>
+</ul></li>
+<li><p>Sex and Employment:</p>
+<ul>
+<li>The negative interaction between male and “Not in labor force” (-0.87067) indicates that being out of the labor force has a more negative impact on financial literacy for males than for females.</li>
+</ul></li>
+</ul>
+</section>
+<section id="implications" class="level3">
+<h3 class="anchored" data-anchor-id="implications">Implications</h3>
+<ul>
+<li><p>Gender Differences: The impact of both education and employment status on financial literacy appears to differ significantly between males and females. This suggests that gender-specific approaches to financial education might be beneficial.</p></li>
+<li><p>Education: Education remains a strong predictor of financial literacy, but its effect is more pronounced for males. This could indicate a need for targeted efforts to enhance the impact of education on financial literacy for females.</p></li>
+</ul>
+</section>
+</section>
+<section id="research-question-2" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-2">Research question 2</h2>
+<p>What are the underlying patterns and relationships between various financial behaviors and attitudes among individuals, and how can these patterns help in designing targeted financial education programs?</p>
+<section id="feature-selection" class="level3">
+<h3 class="anchored" data-anchor-id="feature-selection">Feature selection</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Seleziona tutte le variabili potenzialmente rilevanti</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>potential_features <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    fin_lit_category,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">starts_with</span>(<span class="st">"qf3"</span>),</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    qf4, qf8, qf13, qk1,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    education, employment, age, sex, <span class="co"># variabili demografiche</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    qf10_1<span class="sc">:</span>qf10_12, <span class="co"># attitudini finanziarie dettagliate</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    qk3<span class="sc">:</span>qk7_3, <span class="co"># domande specifiche sulla conoscenza finanziaria</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Converti le variabili numeriche in fattori</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>potential_features <span class="ot">&lt;-</span> potential_features <span class="sc">%&gt;%</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), as.factor))</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Rimuovi le righe con valori mancanti</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>potential_features <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(potential_features)</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Esegui Random Forest per l'importanza delle feature</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>rf_model <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(fin_lit_category <span class="sc">~</span> ., <span class="at">data =</span> potential_features, <span class="at">importance =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Calcola e stampa l'importanza delle feature</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>feature_importance <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf_model)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(feature_importance)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Very Low         Low      Average       High   Very High
+qf3_1       0.6169118  1.08816113 -0.644896863  2.9493676  0.36641402
+qf3_3      13.3555286  6.65632726  5.164371297  8.8752265 -1.87786239
+qf3_4      -0.8022549 -2.54183863  0.912310599  0.5855999  0.33693436
+qf3_6       4.0856131  0.02988942  2.193631876 -1.1303942  3.06860424
+qf3_7       1.0553741  0.00000000  4.127104074 -2.2070429  3.31217443
+qf3_8      15.1385657  3.10179027  3.292168003 13.6009046  6.17112744
+qf3_99      1.1514199  0.00000000 -0.507250015  1.4253771  1.64994458
+qf4         9.5456614  4.46463271  3.810286973  9.2403712  4.80080811
+qf8         4.3271839  0.28268409  1.349102829 -1.3709878  6.59364090
+qf13        6.0115963  1.93692779 -0.281630908  6.5195996  3.05597407
+qk1         6.1120032  0.96452753  0.004342101  3.9407460  5.92722686
+education   1.2776792 -0.51056134 -0.958533816  1.1464808  0.68443959
+employment  4.7168035 -1.58341383  1.033627426  3.8043001  1.72495410
+age         0.6245917 -0.46320737  0.492351418 -0.9905507  1.15451014
+sex         0.2111267  1.61605839  0.552446736  1.2191278  1.29267216
+qf10_1      8.8934302  2.74556150  6.017880749  5.8403560  1.34252420
+qf10_2     33.4219589  9.37439489 15.482524656 26.1422641 22.05314228
+qf10_3      1.4171096  3.14801784  3.372356601  4.2728687 -0.01780813
+qf10_4     22.1565222  7.81874430  3.994072626 20.4060094 11.32878049
+qf10_5      5.0163189  1.12409277  0.588617022 -0.8319104  0.55540684
+qf10_6     17.5259558  9.46157276 10.886191627 11.6384854 13.17480644
+qf10_7     13.9903497  0.10756270  6.729561807  7.2799019 10.59783584
+qf10_8     10.6465373  1.70751065 10.747486055 14.1061000  5.28108336
+qf10_9      1.7977539  0.04142790  2.520024410  1.3792278  2.46302413
+qf10_10     1.2189471 -1.38179770  1.821767448  1.8920011  1.75897059
+qf10_11     3.4444450  2.96937282 -2.690629898  5.1931588 -2.34962569
+qf10_12    11.3432686  0.47981669  3.909295067  3.8507948  2.02823415
+qk3        11.0015677  6.25852859  3.881648308 16.8445915  9.30401943
+qk4        15.3551236 12.51147746  7.419334072 18.3227410 12.11842716
+qk5        22.3242877  7.43681515 13.030602954 29.4231555 20.82349428
+qk6        13.3103517  0.48922975  4.682723241 13.2192365 13.46233231
+qk7_1      12.5846098 13.65990059  0.569664074 17.0940219 10.78011367
+qk7_2      15.7566404  6.22140289  1.091931356 14.4450611  9.44541533
+qk7_3      20.4111637  6.48119601  8.137391682 25.7586818 20.84904435
+           MeanDecreaseAccuracy MeanDecreaseGini
+qf3_1                1.63605510         6.895664
+qf3_3               14.41961065        19.433487
+qf3_4               -0.02286247         2.322094
+qf3_6                2.88660902         6.500800
+qf3_7                2.49990380         3.290827
+qf3_8               17.06060298        24.796195
+qf3_99               1.50295079         2.992390
+qf4                 12.72074241        34.568215
+qf8                  3.83858724        29.807525
+qf13                 6.95995384        48.165181
+qk1                  6.45312115        39.265668
+education            0.63368002        22.634925
+employment           5.00763763        27.182076
+age                  0.32304442        40.722811
+sex                  1.55467397        12.121480
+qf10_1              11.34963901        32.978228
+qf10_2              38.38311994        92.794593
+qf10_3               5.51939094        41.207621
+qf10_4              24.81192318        51.661225
+qf10_5               2.55722090        32.494080
+qf10_6              24.35779844        57.541472
+qf10_7              16.78424042        53.613288
+qf10_8              20.17762267        53.459149
+qf10_9               4.08710411        38.101450
+qf10_10              3.20778668        40.607508
+qf10_11              2.65499550        34.458772
+qf10_12             11.27593430        44.289814
+qk3                 17.71897843        41.194302
+qk4                 22.01091263        37.030017
+qk5                 33.43939556        77.886474
+qk6                 18.02682483        51.776631
+qk7_1               18.27736264        30.695168
+qk7_2               17.53417302        30.110244
+qk7_3               30.40819174        56.564395</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Seleziona le top N feature più importanti</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>top_n_features <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>important_features <span class="ot">&lt;-</span> <span class="fu">row.names</span>(feature_importance)[<span class="fu">order</span>(feature_importance[, <span class="st">"MeanDecreaseGini"</span>], <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span>top_n_features]]</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>final_selected_data <span class="ot">&lt;-</span> potential_features <span class="sc">%&gt;%</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(important_features))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="association-rules" class="level3">
+<h3 class="anchored" data-anchor-id="association-rules">Association rules</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Converti i dati in transazioni</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>transactions <span class="ot">&lt;-</span> <span class="fu">as</span>(final_selected_data, <span class="st">"transactions"</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Esegui l'algoritmo apriori con parametri più restrittivi</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">apriori</span>(transactions, </span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameter =</span> <span class="fu">list</span>(<span class="at">support =</span> <span class="fl">0.1</span>, <span class="at">confidence =</span> <span class="fl">0.8</span>, <span class="at">minlen =</span> <span class="dv">2</span>, <span class="at">maxlen =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Apriori
+
+Parameter specification:
+ confidence minval smax arem  aval originalSupport maxtime support minlen
+        0.8    0.1    1 none FALSE            TRUE       5     0.1      2
+ maxlen target  ext
+     10  rules TRUE
+
+Algorithmic control:
+ filter tree heap memopt load sort verbose
+    0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+
+Absolute minimum support count: 181 
+
+set item appearances ...[0 item(s)] done [0.00s].
+set transactions ...[101 item(s), 1815 transaction(s)] done [0.00s].
+sorting and recoding items ... [55 item(s)] done [0.00s].
+creating transaction tree ... done [0.00s].
+checking subsets of size 1 2 3 4 5 done [0.00s].
+writing ... [10 rule(s)] done [0.00s].
+creating S4 object  ... done [0.00s].</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ordina le regole per lift</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>rules_sorted <span class="ot">&lt;-</span> <span class="fu">sort</span>(rules, <span class="at">by =</span> <span class="st">"lift"</span>, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Funzione per ottenere regole diverse</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>get_diverse_rules <span class="ot">&lt;-</span> <span class="cf">function</span>(rules, <span class="at">n =</span> <span class="dv">3</span>) {</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  diverse_rules <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  seen_rhs <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(rules)) {</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    rule <span class="ot">&lt;-</span> rules[i]</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    rhs <span class="ot">&lt;-</span> <span class="fu">labels</span>(<span class="fu">rhs</span>(rule))</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>(rhs <span class="sc">%in%</span> seen_rhs)) {</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>      diverse_rules <span class="ot">&lt;-</span> <span class="fu">c</span>(diverse_rules, rule)</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>      seen_rhs <span class="ot">&lt;-</span> <span class="fu">c</span>(seen_rhs, rhs)</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(diverse_rules) <span class="sc">==</span> n) <span class="cf">break</span></span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(diverse_rules)</span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Ottieni le prime 3 regole diverse</span></span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>diverse_rules <span class="ot">&lt;-</span> <span class="fu">get_diverse_rules</span>(rules_sorted, <span class="dv">3</span>)</span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>diverse_rules <span class="ot">&lt;-</span> diverse_rules[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Funzione per interpretare una regola</span></span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a>interpret_rule <span class="ot">&lt;-</span> <span class="cf">function</span>(rule) {</span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>  lhs <span class="ot">&lt;-</span> <span class="fu">labels</span>(<span class="fu">lhs</span>(rule))</span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>  rhs <span class="ot">&lt;-</span> <span class="fu">labels</span>(<span class="fu">rhs</span>(rule))</span>
+<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Se un individuo:"</span>, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-34"><a href="#cb45-34" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(item <span class="cf">in</span> lhs) {</span>
+<span id="cb45-35"><a href="#cb45-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"- "</span>, item, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-36"><a href="#cb45-36" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb45-37"><a href="#cb45-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Allora è probabile che anche:"</span>, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-38"><a href="#cb45-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"- "</span>, rhs, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-39"><a href="#cb45-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Con una confidenza di"</span>, <span class="fu">round</span>(<span class="fu">quality</span>(rule)<span class="sc">$</span>confidence, <span class="dv">2</span>), </span>
+<span id="cb45-40"><a href="#cb45-40" aria-hidden="true" tabindex="-1"></a>      <span class="st">"e un lift di"</span>, <span class="fu">round</span>(<span class="fu">quality</span>(rule)<span class="sc">$</span>lift, <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb45-41"><a href="#cb45-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb45-42"><a href="#cb45-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-43"><a href="#cb45-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Interpreta le prime 3 regole diverse</span></span>
+<span id="cb45-44"><a href="#cb45-44" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Le prime 3 regole di associazione diverse:</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Le prime 3 regole di associazione diverse:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(rule <span class="cf">in</span> diverse_rules) {</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">interpret_rule</span>(rule)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Se un individuo: 
+-  {qk7_3=1,qk6=1,qk3=3} 
+Allora è probabile che anche: 
+-  {qk5=102} 
+Con una confidenza di 0.91 e un lift di 1.66 
+
+Se un individuo: 
+-  {qf10_2=5,qf10_6=1} 
+Allora è probabile che anche: 
+-  {qf10_4=1} 
+Con una confidenza di 0.87 e un lift di 1.57 </code></pre>
+</div>
+</div>
+<section id="interpretazione" class="level4">
+<h4 class="anchored" data-anchor-id="interpretazione">Interpretazione</h4>
+</section>
+</section>
+</section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1"></h2>
+</section>
+<section id="research-question-3" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-3">Research question 3</h2>
+<section id="data-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="data-preparation">Data preparation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>df_2022 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"Database_ENG.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>calculate_digital_financial_literacy_score <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Knowledge component (qk7_4, qk7_5, qk7_6)</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  knowledge_score <span class="ot">&lt;-</span> <span class="fu">with</span>(data, </span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    (qk7_4 <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">+</span> (qk7_5 <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">+</span> (qk7_6 <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Behaviour component (qs2_6, qs2_7, qs2_8, qs3_13)</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  behaviour_score <span class="ot">&lt;-</span> <span class="fu">with</span>(data,</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    (qs2_6 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    (qs2_7 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">+</span> </span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    (qs2_8 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>    (qs3_13 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Attitude component (qs4_1, qs4_2, qs4_3)</span></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>  attitude_score <span class="ot">&lt;-</span> <span class="fu">with</span>(data,</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>    (qs4_1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>    (qs4_2 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">+</span> </span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>    (qs4_3 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>))</span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate raw score (0-10)</span></span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>  raw_score <span class="ot">&lt;-</span> knowledge_score <span class="sc">+</span> behaviour_score <span class="sc">+</span> attitude_score</span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Scale the score to 0-100</span></span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a>  scaled_score <span class="ot">&lt;-</span> raw_score <span class="sc">*</span> <span class="dv">10</span></span>
+<span id="cb50-27"><a href="#cb50-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-28"><a href="#cb50-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(scaled_score)</span>
+<span id="cb50-29"><a href="#cb50-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-30"><a href="#cb50-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-31"><a href="#cb50-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Usage:</span></span>
+<span id="cb50-32"><a href="#cb50-32" aria-hidden="true" tabindex="-1"></a>df_2022<span class="sc">$</span>digital_literacy_score <span class="ot">&lt;-</span> <span class="fu">calculate_digital_financial_literacy_score</span>(df_2022)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Recode variables</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>df_2022 <span class="ot">&lt;-</span> df_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Recode income</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">income =</span> <span class="fu">case_when</span>(</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>      qd13 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>      qd13 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">"Medium"</span>,</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>      qd13 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">income =</span> <span class="fu">factor</span>(income, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Recode gender</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">gender =</span> <span class="fu">case_when</span>(</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>      qd1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Male"</span>,</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>      qd1 <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"Female"</span>,</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">gender =</span> <span class="fu">factor</span>(gender),</span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Recode age</span></span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">age =</span> <span class="fu">ifelse</span>(qd7 <span class="sc">==</span> <span class="sc">-</span><span class="dv">99</span>, <span class="cn">NA</span>, qd7),</span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Recode region into North, Centre, South &amp; Islands</span></span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">case_when</span>(</span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>      qd2 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">~</span> <span class="st">"North"</span>,</span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>      qd2 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">"Centre"</span>,</span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a>      qd2 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>) <span class="sc">~</span> <span class="st">"South &amp; Islands"</span>,</span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">factor</span>(region),</span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Recode education</span></span>
+<span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">education =</span> <span class="fu">case_when</span>(</span>
+<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a>      qd9 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">~</span> <span class="st">"University"</span>,</span>
+<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>      qd9 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>) <span class="sc">~</span> <span class="st">"High school"</span>,</span>
+<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>      qd9 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>) <span class="sc">~</span> <span class="st">"Middle school"</span>,</span>
+<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a>      qd9 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">10</span>) <span class="sc">~</span> <span class="st">"Primary or less"</span>,</span>
+<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb51-41"><a href="#cb51-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">education =</span> <span class="fu">factor</span>(education, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Primary or less"</span>, <span class="st">"Middle school"</span>, <span class="st">"High school"</span>, <span class="st">"University"</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb51-42"><a href="#cb51-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-43"><a href="#cb51-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Recode work situation</span></span>
+<span id="cb51-44"><a href="#cb51-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">work_situation =</span> <span class="fu">case_when</span>(</span>
+<span id="cb51-45"><a href="#cb51-45" aria-hidden="true" tabindex="-1"></a>      qd10 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">~</span> <span class="st">"Employed"</span>,</span>
+<span id="cb51-46"><a href="#cb51-46" aria-hidden="true" tabindex="-1"></a>      qd10 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>) <span class="sc">~</span> <span class="st">"Not in labor force"</span>,</span>
+<span id="cb51-47"><a href="#cb51-47" aria-hidden="true" tabindex="-1"></a>      qd10 <span class="sc">==</span> <span class="dv">6</span> <span class="sc">~</span> <span class="st">"Retired"</span>,</span>
+<span id="cb51-48"><a href="#cb51-48" aria-hidden="true" tabindex="-1"></a>      qd10 <span class="sc">==</span> <span class="dv">9</span> <span class="sc">~</span> <span class="st">"Student"</span>,</span>
+<span id="cb51-49"><a href="#cb51-49" aria-hidden="true" tabindex="-1"></a>      qd10 <span class="sc">==</span> <span class="dv">10</span> <span class="sc">~</span> <span class="st">"Other"</span>,</span>
+<span id="cb51-50"><a href="#cb51-50" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb51-51"><a href="#cb51-51" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb51-52"><a href="#cb51-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">work_situation =</span> <span class="fu">factor</span>(work_situation)</span>
+<span id="cb51-53"><a href="#cb51-53" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb51-54"><a href="#cb51-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove rows with NA in key variables</span></span>
+<span id="cb51-55"><a href="#cb51-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(income), <span class="sc">!</span><span class="fu">is.na</span>(gender), <span class="sc">!</span><span class="fu">is.na</span>(age), <span class="sc">!</span><span class="fu">is.na</span>(region), <span class="sc">!</span><span class="fu">is.na</span>(education), <span class="sc">!</span><span class="fu">is.na</span>(work_situation))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="multiple-linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-linear-regression">Multiple linear regression</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple linear regression</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>mlr_df <span class="ot">&lt;-</span> <span class="fu">lm</span>(digital_literacy_score <span class="sc">~</span> age <span class="sc">+</span> education <span class="sc">+</span> income <span class="sc">+</span> gender <span class="sc">+</span> region <span class="sc">+</span> work_situation, <span class="at">data =</span> df_2022)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the model</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mlr_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = digital_literacy_score ~ age + education + income + 
+    gender + region + work_situation, data = df_2022)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-54.793 -13.618   0.017  14.533  59.769 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                      48.05529    2.02039  23.785  &lt; 2e-16 ***
+age                              -0.06964    0.03559  -1.957  0.05046 .  
+education.L                      10.80806    1.94519   5.556 2.98e-08 ***
+education.Q                      -3.51532    1.44708  -2.429  0.01519 *  
+education.C                      -1.94778    0.88503  -2.201  0.02782 *  
+income.L                          2.50703    0.88076   2.846  0.00445 ** 
+income.Q                         -0.27677    0.66299  -0.417  0.67637    
+genderMale                        1.83799    0.75540   2.433  0.01502 *  
+regionNorth                       1.55996    0.97731   1.596  0.11055    
+regionSouth &amp; Islands            -1.01519    1.03005  -0.986  0.32441    
+work_situationNot in labor force -6.36575    1.33614  -4.764 1.98e-06 ***
+work_situationRetired            -1.61879    1.25855  -1.286  0.19845    
+work_situationStudent            -9.63871    2.30136  -4.188 2.89e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 20.39 on 3170 degrees of freedom
+Multiple R-squared:  0.07372,   Adjusted R-squared:  0.07022 
+F-statistic: 21.03 on 12 and 3170 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy summary for easier interpretation</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>tidy_model <span class="ot">&lt;-</span> <span class="fu">tidy</span>(mlr_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize coefficients</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tidy_model, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(term, estimate), <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> estimate <span class="sc">-</span> std.error, <span class="at">ymax =</span> estimate <span class="sc">+</span> std.error), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Demographic Factors Influencing Digital Financial Literacy"</span>,</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Factors"</span>, <span class="at">y =</span> <span class="st">"Estimated Effect on Digital Financial Literacy Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="anova" class="level3">
+<h3 class="anchored" data-anchor-id="anova">ANOVA</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ANOVA for categorical variables</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>anova_results <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">income =</span> <span class="fu">aov</span>(digital_literacy_score <span class="sc">~</span> income, <span class="at">data =</span> df_2022),</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="fu">aov</span>(digital_literacy_score <span class="sc">~</span> education, <span class="at">data =</span> df_2022),</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="fu">aov</span>(digital_literacy_score <span class="sc">~</span> region, <span class="at">data =</span> df_2022),</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">work_situation =</span> <span class="fu">aov</span>(digital_literacy_score <span class="sc">~</span> work_situation, <span class="at">data =</span> df_2022)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Print ANOVA summaries</span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(anova_results, summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$income
+              Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
+income         2   19511    9756   22.11 2.92e-10 ***
+Residuals   3180 1403247     441                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+$education
+              Df  Sum Sq Mean Sq F value Pr(&gt;F)    
+education      3   69130   23043   54.12 &lt;2e-16 ***
+Residuals   3179 1353628     426                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+$region
+              Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
+region         2    7720    3860   8.674 0.000175 ***
+Residuals   3180 1415038     445                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+$work_situation
+                 Df  Sum Sq Mean Sq F value Pr(&gt;F)    
+work_situation    3   51551   17184   39.84 &lt;2e-16 ***
+Residuals      3179 1371207     431                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="ordinal-logistic-regression" class="level3">
+<h3 class="anchored" data-anchor-id="ordinal-logistic-regression">Ordinal logistic regression</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Recode digital risk perception into ordinal categories</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>df_2022 <span class="ot">&lt;-</span> df_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">digital_risk_perception =</span> <span class="fu">case_when</span>(</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>      qs4_1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Very High"</span>,</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>      qs4_1 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>      qs4_1 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">"Medium"</span>,</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>      qs4_1 <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>      qs4_1 <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">"Very Low"</span>,</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">digital_risk_perception =</span> <span class="fu">factor</span>(digital_risk_perception, </span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Very Low"</span>, <span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span>, <span class="st">"Very High"</span>),</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the ordinal logistic regression model</span></span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>model_risk <span class="ot">&lt;-</span> <span class="fu">polr</span>(digital_risk_perception <span class="sc">~</span> digital_literacy_score <span class="sc">+</span> </span>
+<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a>                   education <span class="sc">+</span> income <span class="sc">+</span> age <span class="sc">+</span> gender <span class="sc">+</span> region, </span>
+<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> df_2022, <span class="at">Hess =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb58-21"><a href="#cb58-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-22"><a href="#cb58-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Model summary</span></span>
+<span id="cb58-23"><a href="#cb58-23" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_risk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+polr(formula = digital_risk_perception ~ digital_literacy_score + 
+    education + income + age + gender + region, data = df_2022, 
+    Hess = TRUE)
+
+Coefficients:
+                           Value Std. Error   t value
+digital_literacy_score -0.033740   0.001985 -16.99795
+education.L            -0.070000   0.275553  -0.25403
+education.Q            -0.090645   0.207450  -0.43695
+education.C            -0.347054   0.114558  -3.02951
+income.L                0.284440   0.084835   3.35285
+income.Q               -0.162273   0.064018  -2.53481
+age                    -0.014727   0.002518  -5.84992
+genderMale              0.154816   0.073241   2.11379
+regionNorth             0.046540   0.097288   0.47837
+regionSouth &amp; Islands  -0.009204   0.102531  -0.08976
+
+Intercepts:
+               Value    Std. Error t value 
+Very Low|Low    -4.1408   0.2272   -18.2272
+Low|Medium      -2.6383   0.2177   -12.1181
+Medium|High     -0.7734   0.2112    -3.6627
+High|Very High   1.4232   0.2340     6.0832
+
+Residual Deviance: 6946.921 
+AIC: 6974.921 
+(605 observations deleted due to missingness)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy output of the model</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>tidy_model <span class="ot">&lt;-</span> <span class="fu">tidy</span>(model_risk)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tidy_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 14 × 5
+   term                   estimate std.error statistic coef.type  
+   &lt;chr&gt;                     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;      
+ 1 digital_literacy_score -0.0337    0.00198  -17.0    coefficient
+ 2 education.L            -0.0700    0.276     -0.254  coefficient
+ 3 education.Q            -0.0906    0.207     -0.437  coefficient
+ 4 education.C            -0.347     0.115     -3.03   coefficient
+ 5 income.L                0.284     0.0848     3.35   coefficient
+ 6 income.Q               -0.162     0.0640    -2.53   coefficient
+ 7 age                    -0.0147    0.00252   -5.85   coefficient
+ 8 genderMale              0.155     0.0732     2.11   coefficient
+ 9 regionNorth             0.0465    0.0973     0.478  coefficient
+10 regionSouth &amp; Islands  -0.00920   0.103     -0.0898 coefficient
+11 Very Low|Low           -4.14      0.227    -18.2    scale      
+12 Low|Medium             -2.64      0.218    -12.1    scale      
+13 Medium|High            -0.773     0.211     -3.66   scale      
+14 High|Very High          1.42      0.234      6.08   scale      </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate and print odds ratios with confidence intervals</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>odds_ratios <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(model_risk))</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">confint</span>(model_risk))</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>odds_ratios_table <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">OR =</span> odds_ratios, ci)</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(odds_ratios_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              OR     2.5 %    97.5 %
+digital_literacy_score 0.9668224 0.9630542 0.9705766
+education.L            0.9323940 0.5431707 1.6070477
+education.Q            0.9133422 0.6062769 1.3718063
+education.C            0.7067670 0.5645668 0.8853212
+income.L               1.3290175 1.1255006 1.5696371
+income.Q               0.8502093 0.7498915 0.9638197
+age                    0.9853807 0.9805242 0.9902484
+genderMale             1.1674428 1.0113958 1.3477799
+regionNorth            1.0476396 0.8657258 1.2677407
+regionSouth &amp; Islands  0.9908386 0.8104076 1.2113742</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Optional: Create a formatted table of odds ratios</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(odds_ratios_table, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">caption =</span> <span class="st">"Odds Ratios with 95% Confidence Intervals"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Odds Ratios with 95% Confidence Intervals</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">OR</th>
+<th style="text-align: right;">2.5 %</th>
+<th style="text-align: right;">97.5 %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">digital_literacy_score</td>
+<td style="text-align: right;">0.967</td>
+<td style="text-align: right;">0.963</td>
+<td style="text-align: right;">0.971</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">education.L</td>
+<td style="text-align: right;">0.932</td>
+<td style="text-align: right;">0.543</td>
+<td style="text-align: right;">1.607</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">education.Q</td>
+<td style="text-align: right;">0.913</td>
+<td style="text-align: right;">0.606</td>
+<td style="text-align: right;">1.372</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">education.C</td>
+<td style="text-align: right;">0.707</td>
+<td style="text-align: right;">0.565</td>
+<td style="text-align: right;">0.885</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">income.L</td>
+<td style="text-align: right;">1.329</td>
+<td style="text-align: right;">1.126</td>
+<td style="text-align: right;">1.570</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">income.Q</td>
+<td style="text-align: right;">0.850</td>
+<td style="text-align: right;">0.750</td>
+<td style="text-align: right;">0.964</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0.985</td>
+<td style="text-align: right;">0.981</td>
+<td style="text-align: right;">0.990</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">genderMale</td>
+<td style="text-align: right;">1.167</td>
+<td style="text-align: right;">1.011</td>
+<td style="text-align: right;">1.348</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">regionNorth</td>
+<td style="text-align: right;">1.048</td>
+<td style="text-align: right;">0.866</td>
+<td style="text-align: right;">1.268</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">regionSouth &amp; Islands</td>
+<td style="text-align: right;">0.991</td>
+<td style="text-align: right;">0.810</td>
+<td style="text-align: right;">1.211</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new data for predictions</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">digital_literacy_score =</span> <span class="fu">seq</span>(</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">min</span>(df_2022<span class="sc">$</span>digital_literacy_score, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(df_2022<span class="sc">$</span>digital_literacy_score, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">length.out =</span> <span class="dv">100</span></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">education =</span> <span class="st">"High school"</span>,  <span class="co"># Mode or reference level</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">income =</span> <span class="st">"Medium"</span>,          <span class="co"># Mode or reference level</span></span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">mean</span>(df_2022<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="st">"Female"</span>,          <span class="co"># Mode or reference level</span></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="st">"North"</span>            <span class="co"># Mode or reference level</span></span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict probabilities</span></span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a>predicted_probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_risk, <span class="at">newdata =</span> new_data, <span class="at">type =</span> <span class="st">"probs"</span>)</span>
+<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for plotting</span></span>
+<span id="cb65-19"><a href="#cb65-19" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">cbind</span>(new_data, predicted_probs)</span>
+<span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a>plot_data_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(plot_data, </span>
+<span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a>                               <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"Very Low"</span>, <span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span>, <span class="st">"Very High"</span>),</span>
+<span id="cb65-22"><a href="#cb65-22" aria-hidden="true" tabindex="-1"></a>                               <span class="at">names_to =</span> <span class="st">"risk_level"</span>, </span>
+<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a>                               <span class="at">values_to =</span> <span class="st">"probability"</span>)</span>
+<span id="cb65-24"><a href="#cb65-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-25"><a href="#cb65-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot predicted probabilities</span></span>
+<span id="cb65-26"><a href="#cb65-26" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data_long, <span class="fu">aes</span>(<span class="at">x =</span> digital_literacy_score, <span class="at">y =</span> probability, <span class="at">color =</span> risk_level)) <span class="sc">+</span></span>
+<span id="cb65-27"><a href="#cb65-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb65-28"><a href="#cb65-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Predicted Probabilities of Digital Risk Perception"</span>,</span>
+<span id="cb65-29"><a href="#cb65-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Digital Literacy Score"</span>,</span>
+<span id="cb65-30"><a href="#cb65-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability"</span>,</span>
+<span id="cb65-31"><a href="#cb65-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Risk Level"</span>) <span class="sc">+</span></span>
+<span id="cb65-32"><a href="#cb65-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the effect of digital literacy score on risk perception</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">effect</span>(<span class="st">"digital_literacy_score"</span>, model_risk))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data-Science-Lab-Project_files/figure-html/unnamed-chunk-36-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

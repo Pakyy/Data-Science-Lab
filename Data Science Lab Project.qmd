@@ -1,0 +1,791 @@
+---
+title: "Data Science Lab Project"
+author: "Pasquale Gravante"
+date: "`r format(Sys.Date(), '%B %d, %Y')`" # Displays today's date in the format "Month Day, Year"
+format: 
+  html:
+    warning: false
+    messages: false
+    code-fold: false
+    code-summary: "Show the code"
+    keep-md: true # Keeps the markdown file generated in the conversion process
+    toc: true # Includes a table of contents
+    toc-depth: 2 # Depth of the table of contents
+    toc-title: "Contents" # Title of the table of contents
+---
+
+# INTRODUCTION
+
+## Dataset description
+
+The dataset used in this project, provided by Banca d'Italia, is a comprehensive survey on financial literacy among Italian adults. The survey, part of an OECD initiative, aims to create an internationally comparable dataset to evaluate financial literacy and inclusion. It includes approximately 2,500 respondents who were interviewed using two different methods: face-to-face interviews and tablet-based responses. The dataset contains detailed socio-demographic information, financial knowledge scores, behavioral data on financial practices, and attitudes towards financial management. Key variables include gender, age, educational qualification, employment status, geographic location, and various aspects of financial behavior and attitudes.
+
+## Idea and motivations
+
+Financial literacy is a critical factor for individual and household economic well-being. Despite the importance of financial knowledge, many individuals struggle with understanding basic financial concepts, which can lead to poor financial decisions and increased financial vulnerability.
+
+The motivation behind this project is to analyze the current state of financial literacy in Italy, identify key factors influencing it, and develop targeted strategies to improve financial education. By leveraging this rich dataset, we can gain insights into the financial behaviors and attitudes of different demographic groups and understand how financial literacy impacts their financial decision-making.
+
+## Aim of the project
+
+The primary aim of this project is to assess and improve financial literacy among Italian adults by conducting an analysis of the provided dataset. Specifically, the project has the following objectives:
+
+**Assess the Current Level of Financial Literacy**: Evaluate the financial literacy scores across various demographic groups to understand the disparities and identify areas needing improvement.
+
+**Identify Key Influencing Factors**: Determine the socio-demographic and economic factors that significantly impact financial literacy and financial behaviors.
+
+**Examine Financial Resilience**: Analyze how different levels of financial literacy affect the ability of individuals to manage financial shocks and unexpected expenses.
+
+**Explore Financial Decision-Making**: Investigate the relationship between financial literacy and the quality of financial decisions, such as investment choices and debt management.
+
+**Investigate Regional Disparities:** Assess regional differences in financial literacy and access to financial education resources to identify areas where interventions are most needed.
+
+# DATA PRE-PROCESSING
+
+In this section the necessary data and libraries are imported:
+
+```{r}
+library(effects)
+library(broom)
+library(MASS)
+library(randomForest)
+library(cluster)
+library(factoextra)
+library(NbClust)
+library(arules)
+library(arulesViz)
+library(dplyr)
+library(tidyr)
+library(caret)
+library(ggplot2)
+library(readr)
+library(forcats)
+library(knitr)
+library(MASS)
+```
+
+```{r}
+df <- read.csv("Dati Ricerca BI.csv")
+```
+
+## Cleaning
+
+```{r}
+df <- df[,-c(104,105)]
+df <- df %>% mutate(across(starts_with("Q"), as.factor))
+df$AREA5 <- as.factor(df$AREA5)
+df <- df %>%
+  mutate(across(starts_with("q"), ~ fct_recode(., NULL = "-99", NULL = "_99")))
+df$qd7 <- as.numeric(df$qd7)
+```
+
+## Data Manipulation
+
+Creation of an age group variable:
+
+```{r}
+df <- df %>%
+  mutate(age = case_when(
+    qd7 < 18 ~ 'under_18',
+    qd7 >= 18 & qd7 < 30 ~ '18_29',
+    qd7 >= 30 & qd7 < 45 ~ '30_44',
+    qd7 >= 45 & qd7 < 60 ~ '45_59',
+    qd7 >= 60 ~ '60+'
+  ))
+df <- df %>%
+  mutate(age = as.factor(age))
+```
+
+Grouping regions:
+
+```{r}
+df <- df %>%
+  mutate(region = case_when(
+    AREA5 %in% c(1, 2) ~ 'North',
+    AREA5 == 3 ~ 'Centre',
+    AREA5 %in% c(4, 5) ~ 'South & Islands'
+  )) %>% mutate(region = as.factor(region))
+```
+
+Sex variable:
+
+```{r}
+df <- df %>%
+  mutate(sex = case_when(
+    qd1 == 0 ~ 'Female',
+    qd1 == 1 ~ 'Male')) %>% mutate(sex = as.factor(sex))
+```
+
+Education variable:
+
+```{r}
+df <- df %>%
+  mutate(education = case_when(
+    qd9 %in% c('6', '7') ~ 'No education',
+    qd9 %in% c('5', '4') ~ 'Primary education',
+    qd9 == '3' ~ 'Secondary education',
+    qd9 == '1' ~ 'University'
+  )) %>%
+  mutate(education = factor(education, levels = c('No education', 'Primary education', 'Secondary education', 'University'), ordered = TRUE))
+```
+
+Employment variable:
+
+```{r}
+df <- df %>%
+  mutate(employment = case_when(
+    qd10 %in% c(1, 2) ~ 'Employed',
+    qd10 %in% c(4, 5) ~ 'Not in labor force',
+    qd10 == 6 ~ 'Retired',
+    qd10 == 9 ~ 'Student'
+  )) %>%
+  mutate(employment = factor(employment, levels = c('Employed', 'Not in labor force', 'Retired', 'Student')))
+```
+
+## Feature engineering
+
+### Interaction variables
+
+```{r}
+df <- df %>%
+  mutate(inter_education_employment = interaction(education, employment)) %>%
+  mutate(inter_sex_employment = interaction(sex, employment)) %>%
+  mutate(inter_sex_education = interaction(sex, education)) %>%
+  mutate(inter_region_education = interaction(region, education)) %>%
+  mutate(inter_age_education = interaction(age, education)) %>%
+  mutate(inter_age_region = interaction(age, region)) 
+
+```
+
+### Financial behavior score
+
+```{r}
+# Rule 1: 1 point if personally or jointly responsible for money management AND actively keeping track of money
+
+rule_1 <- as.numeric((df$qf1 %in% c(1, 2) & df$qf2 == 1))
+
+# Rule 2: 1 point for any type of active saving (QF3_1 - QF3_99)
+
+df <- df %>%
+  mutate(across(starts_with("qf3_"), ~ as.numeric(as.character(.))))
+
+active_saving_qf3 <- ifelse(rowSums(df[, grep("^qf3_", names(df))], na.rm = TRUE) >= 1 & df$qf3_8 != 1 & df$qf3_99 != 1, 1, 0)
+
+rule_2 <- as.numeric(active_saving_qf3 == 1)
+
+# Rule 3: 1 point if no borrowing to make ends meet
+
+rule_3 <- with(df, ifelse(qf11 == 0, 1, 
+                                   ifelse(qf11 == 1 & !(qf12_3_e == 1 | qf12_3_f == 1 | qf12_3_g == 1 | 
+                                                         qf12_4_k == 1 | qf12_4_l == 1 | qf12_5_m == 1 | 
+                                                         qf12_5_o == 1 | qf12_6_p == 1 | qf12_6_q == 1 | qf12_99 == 1 | qf12_97 == 1),1,0)))
+
+# Rule 4: Choosing products
+
+qp_d1 <- as.numeric(df$qprod2 %in% c(1, 4))
+qp_d2 <- rep(0, nrow(df))
+rows_to_check <- df$qprod2 %in% c(1, 4)
+
+### Check variables for value 1 in the first set (answers that give 2 points)
+
+df <- df %>%
+  mutate(across(c("qprod3_2", "qprod3_3", "qprod3_4", "qprod3_5", "qprod3_6", "qprod3_7", "qprod3_8", "qprod3_10"), ~ as.numeric(as.character(.))))
+
+qp_d2[rows_to_check] <- ifelse(
+  rowSums(df[rows_to_check, c("qprod3_2", "qprod3_3", "qprod3_4", "qprod3_5", "qprod3_6", "qprod3_7", "qprod3_8", "qprod3_10")], na.rm = TRUE) > 0,
+  2,
+  0
+)
+
+### Check variables for value 1 in the second set (answers that give 1 point)
+
+df <- df %>%
+  mutate(across(c("qprod3_1", "qprod3_9", "qprod3_11", "qprod3_12", "qprod3_13", "qprod3_14", "qprod3_15", "qprod3_16", "qprod3_17", "qprod3_18"), ~ as.numeric(as.character(.))))
+
+qp_d2[rows_to_check & qp_d2 == 0] <- ifelse(
+  rowSums(df[rows_to_check & qp_d2 == 0, c("qprod3_1", "qprod3_9", "qprod3_11", "qprod3_12", "qprod3_13", "qprod3_14", "qprod3_15", "qprod3_16", "qprod3_17", "qprod3_18")], na.rm = TRUE) > 0,
+  1,
+  0
+)
+
+## Create the rule_4 variable and assign values based on intermediate variables scores
+
+rule_4 <- ifelse(qp_d2 == 2, 2, ifelse(qp_d1 == 1 | qp_d2 == 1, 1, 0))
+
+# Creating Rule 5
+
+rule_5 <- ifelse(df$qf10_6 %in% c(1, 2) & df$qf10_7 %in% c(1, 2), 2,
+                             ifelse(df$qf10_6 %in% c(1, 2) | df$qf10_7 %in% c(1, 2), 1, 0))
+
+# Creating Rule 6 - Financial behaviours
+
+rule_6 <- ifelse(df$qf10_1 %in% c(1, 2) & df$qf10_4 %in% c(1, 2), 2,
+                             ifelse(df$qf10_1 %in% c(1, 2) | df$qf10_4 %in% c(1, 2), 1, 0))
+
+# Summing up rules to get the financial behaviour score (goes from 0 to 9)
+
+df$fin_behaviour_score = rowSums(cbind(rule_1, rule_2, rule_3, rule_4, rule_5, rule_6), na.rm = TRUE)
+```
+
+### Financial knowledge score
+
+```{r}
+rule_7 <- as.numeric(df$qk3 == 3)
+rule_8 <- as.numeric(df$qk4 == 0)
+rule_9 <- as.numeric(df$qk5 == 102)
+rule_10 <- as.numeric(df$qk5 == 102 & df$qk6 == 1)
+rule_11 <- as.numeric(df$qk7_1 == 1)
+rule_12 <- as.numeric(df$qk7_2 == 1)
+rule_13 <- as.numeric(df$qk7_3 == 1)
+
+### Summing up the rules to create the score
+
+df$fin_knowledge_score = rowSums(cbind(rule_7, rule_8, rule_9, rule_10, rule_11, rule_12, rule_13), na.rm = TRUE)
+```
+
+### Financial attitude score
+
+```{r}
+# Specify the columns to be recoded
+columns_to_recode <- c("qf10_1", "qf10_2", "qf10_3", "qf10_4", "qf10_5", "qf10_6", "qf10_7", "qf10_8", "qf10_9", "qf10_10", "qf10_11", "qf10_12")
+
+df <- df %>%
+  mutate(across(all_of(columns_to_recode), as.factor))
+
+df <- df %>%
+  mutate(across(all_of(columns_to_recode), ~ fct_na_value_to_level(fct_recode(., `3` = "-97"), level = "3")))
+
+### Creating the rule
+
+# Specify the columns for rescaling
+columns_to_rescale <- c("qf10_2", "qf10_8")
+
+# Create a temporary data frame for rescaled values
+temp_data <- df[columns_to_rescale]
+temp_data$qf10_2 <- as.numeric(temp_data$qf10_2)
+temp_data$qf10_8 <- as.numeric(temp_data$qf10_8)
+
+# Rescale values from 1 to 5 to 0 to 4 in the temporary data frame
+temp_data <- temp_data - 1
+
+# Calculate the average and store it in rule_14
+temp_data$rule_14temp <- rowMeans(temp_data, na.rm = TRUE)
+rule_14 = temp_data$rule_14temp
+df$fin_attitude_score = rule_14
+```
+
+### Financial literacy score
+
+```{r}
+df$fin_literacy_score <- rowSums(df[, c("fin_behaviour_score", "fin_attitude_score", "fin_knowledge_score")], na.rm = TRUE)
+```
+
+Creating categories:
+
+```{r}
+# Create categories for the fin_literacy_score
+df <- df %>%
+  mutate(fin_lit_category = case_when(
+    fin_literacy_score < 4 ~ "Low",
+    fin_literacy_score < 8 ~ "Very Low",
+    fin_literacy_score < 12 ~ "Average",
+    fin_literacy_score < 16 ~ "High",
+    fin_literacy_score >= 16 ~ "Very High"
+  ))
+
+# Convert to factor with ordered levels
+df$fin_lit_category <- factor(df$fin_lit_category, 
+                                    levels = c("Very Low", "Low", "Average", "High", "Very High"), ordered = TRUE)
+```
+
+# EDA
+
+## Tables
+
+In this section the dataset is going to be explored:
+
+```{r}
+df <- df %>% filter(!is.na(education), !is.na(employment))
+```
+
+```{r}
+# Summary table for age_group
+age_summary <- df %>%
+  group_by(age) %>%
+  summarise(Count = n()) %>%
+  kable(col.names = c("Age", "Count"), caption = "Distribution of Age Groups")
+
+# Summary table for education
+education_summary <- df %>%
+  group_by(education) %>%
+  summarise(Count = n()) %>%
+  kable(col.names = c("Education Level", "Count"), caption = "Distribution of Education Levels")
+
+# Summary table for region
+region_summary <- df %>%
+  group_by(region) %>%
+  summarise(Count = n()) %>%
+  kable(col.names = c("Region", "Count"), caption = "Distribution of Regions")
+
+# Summary table for employment_status
+employment_status_summary <- df %>%
+  group_by(employment) %>%
+  summarise(Count = n()) %>%
+  kable(col.names = c("Employment Status", "Count"), caption = "Distribution of Employment Status")
+
+sex_summary <- df %>%
+  group_by(sex) %>%
+  summarise(Count = n()) %>%
+  kable(col.names = c("Gender", "Count"), caption = "Distribution of Genders")
+
+# Display the tables
+print(age_summary)
+print(education_summary)
+print(region_summary)
+print(employment_status_summary)
+print(sex_summary)
+
+```
+
+## 
+
+## Visualizations
+
+```{r}
+ggplot(df, aes(x = fin_lit_category)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Financial Literacy Categories", x = "Financial Literacy Category", y = "Count") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(df, aes(x = age, y = fin_literacy_score)) +
+  geom_boxplot(fill = "lightcoral") +
+  labs(title = "Financial Literacy Scores by Age Group", x = "Age Group", y = "Financial Literacy Score")
+```
+
+```{r}
+ggplot(df, aes(x = education, y = fin_literacy_score)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Financial Literacy Scores by Education Level", x = "Education Level", y = "Financial Literacy Score")
+```
+
+```{r}
+ggplot(df, aes(x = employment, y = fin_literacy_score)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(title = "Financial Literacy Scores by Employment", x = "Employment", y = "Financial Literacy Score")
+```
+
+```{r}
+ggplot(df, aes(x = sex, y = fin_literacy_score)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Financial Literacy Scores by Sex", x = "Sex", y = "Financial Literacy Score")
+```
+
+```{r}
+ggplot(df, aes(x = region, y = fin_literacy_score)) +
+  geom_boxplot(fill = "steelblue") +
+  labs(title = "Financial Literacy Scores by Region", x = "Region", y = "Financial Literacy Score")
+```
+
+# MODELING
+
+## Research question 1
+
+Understanding the determinants of financial literacy through ordinal regression can inform policymakers and educators about:
+
+-   Targeted educational programs for specific demographic groups.
+
+-   Effective policy measures to improve financial literacy across different population segments.
+
+-   Allocation of resources in areas where interventions are most needed.
+
+### Ordinal regression
+
+```{r}
+# Fit the ordinal regression model
+ord_model <- polr(fin_lit_category ~ age + education + region + employment + sex, data = df, Hess = TRUE)
+
+# Summary of the model
+summary(ord_model)
+```
+
+```{r}
+# Calculate p-values for the model coefficients
+coeftest <- coef(summary(ord_model))
+p_values <- pnorm(abs(coeftest[, "t value"]), lower.tail = FALSE) * 2
+
+# Combine coefficients and p-values into a data frame
+ord_model_results <- cbind(coeftest, "p value" = p_values)
+
+# Display the results
+print(ord_model_results)
+```
+
+#### **Interpretation**
+
+### Linear regression
+
+#### Regional disparities model
+
+```{r}
+lm1 = lm(fin_literacy_score ~ region * education + 
+                        region * employment +
+                        age + sex, data = df)
+summary(lm1)
+```
+
+None of the interaction terms between region and education or region and employment are statistically significant. This suggests that:
+
+-   The effect of education on financial literacy does not significantly differ across regions.
+
+-   The impact of employment status on financial literacy is relatively consistent across regions.
+
+#### Gender and Socioeconomic Interaction Model
+
+```{r}
+lm2 = lm(fin_literacy_score ~ sex * education + 
+                        sex * employment + 
+                        sex * age +
+                        region, data = df)
+summary(lm2)
+```
+
+### Interpretation of Interactions
+
+-   Sex and Education:
+
+    -   The positive interaction between male and education.L (2.36899) suggests that the positive effect of education on financial literacy is stronger for males than for females.
+
+-   Sex and Employment:
+
+    -   The negative interaction between male and "Not in labor force" (-0.87067) indicates that being out of the labor force has a more negative impact on financial literacy for males than for females.
+
+### Implications
+
+-   Gender Differences: The impact of both education and employment status on financial literacy appears to differ significantly between males and females. This suggests that gender-specific approaches to financial education might be beneficial.
+
+-   Education: Education remains a strong predictor of financial literacy, but its effect is more pronounced for males. This could indicate a need for targeted efforts to enhance the impact of education on financial literacy for females.
+
+## Research question 2
+
+What are the underlying patterns and relationships between various financial behaviors and attitudes among individuals, and how can these patterns help in designing targeted financial education programs?
+
+### Feature selection
+
+```{r}
+# Seleziona tutte le variabili potenzialmente rilevanti
+potential_features <- df %>%
+  dplyr::select(
+    fin_lit_category,
+    starts_with("qf3"),
+    qf4, qf8, qf13, qk1,
+    education, employment, age, sex, # variabili demografiche
+    qf10_1:qf10_12, # attitudini finanziarie dettagliate
+    qk3:qk7_3, # domande specifiche sulla conoscenza finanziaria
+  )
+
+# Converti le variabili numeriche in fattori
+potential_features <- potential_features %>%
+  mutate(across(where(is.numeric), as.factor))
+
+# Rimuovi le righe con valori mancanti
+potential_features <- na.omit(potential_features)
+
+# 2. Esegui Random Forest per l'importanza delle feature
+set.seed(123)
+rf_model <- randomForest(fin_lit_category ~ ., data = potential_features, importance = TRUE)
+
+# 3. Calcola e stampa l'importanza delle feature
+feature_importance <- importance(rf_model)
+print(feature_importance)
+
+# 4. Seleziona le top N feature più importanti
+top_n_features <- 15
+important_features <- row.names(feature_importance)[order(feature_importance[, "MeanDecreaseGini"], decreasing = TRUE)[1:top_n_features]]
+
+final_selected_data <- potential_features %>%
+  dplyr::select(all_of(important_features))
+```
+
+### Association rules
+
+```{r}
+# Converti i dati in transazioni
+transactions <- as(final_selected_data, "transactions")
+
+# Esegui l'algoritmo apriori con parametri più restrittivi
+rules <- apriori(transactions, 
+                 parameter = list(support = 0.1, confidence = 0.8, minlen = 2, maxlen = 10))
+
+# Ordina le regole per lift
+rules_sorted <- sort(rules, by = "lift", decreasing = TRUE)
+
+# Funzione per ottenere regole diverse
+get_diverse_rules <- function(rules, n = 3) {
+  diverse_rules <- list()
+  seen_rhs <- c()
+  
+  for (i in 1:length(rules)) {
+    rule <- rules[i]
+    rhs <- labels(rhs(rule))
+    
+    if (!(rhs %in% seen_rhs)) {
+      diverse_rules <- c(diverse_rules, rule)
+      seen_rhs <- c(seen_rhs, rhs)
+    }
+    
+    if (length(diverse_rules) == n) break
+  }
+  
+  return(diverse_rules)
+}
+
+# Ottieni le prime 3 regole diverse
+diverse_rules <- get_diverse_rules(rules_sorted, 3)
+diverse_rules <- diverse_rules[-1]
+
+# Funzione per interpretare una regola
+interpret_rule <- function(rule) {
+  lhs <- labels(lhs(rule))
+  rhs <- labels(rhs(rule))
+  
+  cat("Se un individuo:", "\n")
+  for(item in lhs) {
+    cat("- ", item, "\n")
+  }
+  cat("Allora è probabile che anche:", "\n")
+  cat("- ", rhs, "\n")
+  cat("Con una confidenza di", round(quality(rule)$confidence, 2), 
+      "e un lift di", round(quality(rule)$lift, 2), "\n\n")
+}
+
+# Interpreta le prime 3 regole diverse
+cat("Le prime 3 regole di associazione diverse:\n\n")
+for(rule in diverse_rules) {
+  interpret_rule(rule)
+}
+```
+
+#### Interpretazione
+
+## 
+
+## Research question 3
+
+### Data preparation
+
+```{r}
+df_2022 <- read.csv("Database_ENG.csv")
+```
+
+```{r}
+calculate_digital_financial_literacy_score <- function(data) {
+  # Knowledge component (qk7_4, qk7_5, qk7_6)
+  knowledge_score <- with(data, 
+    (qk7_4 == 0) + (qk7_5 == 1) + (qk7_6 == 0)
+  )
+  
+  # Behaviour component (qs2_6, qs2_7, qs2_8, qs3_13)
+  behaviour_score <- with(data,
+    (qs2_6 %in% c(4, 5)) + 
+    (qs2_7 %in% c(1, 2)) + 
+    (qs2_8 %in% c(4, 5)) + 
+    (qs3_13 %in% c(1, 2))
+  )
+  
+  # Attitude component (qs4_1, qs4_2, qs4_3)
+  attitude_score <- with(data,
+    (qs4_1 %in% c(4, 5)) + 
+    (qs4_2 %in% c(1, 2)) + 
+    (qs4_3 %in% c(4, 5))
+  )
+  
+  # Calculate raw score (0-10)
+  raw_score <- knowledge_score + behaviour_score + attitude_score
+  
+  # Scale the score to 0-100
+  scaled_score <- raw_score * 10
+  
+  return(scaled_score)
+}
+
+# Usage:
+df_2022$digital_literacy_score <- calculate_digital_financial_literacy_score(df_2022)
+```
+
+```{r}
+# Recode variables
+df_2022 <- df_2022 %>%
+  mutate(
+    # Recode income
+    income = case_when(
+      qd13 == 1 ~ "Low",
+      qd13 == 2 ~ "Medium",
+      qd13 == 3 ~ "High",
+      TRUE ~ NA_character_
+    ),
+    income = factor(income, levels = c("Low", "Medium", "High"), ordered = TRUE),
+    
+    # Recode gender
+    gender = case_when(
+      qd1 == 1 ~ "Male",
+      qd1 == 0 ~ "Female",
+      TRUE ~ NA_character_
+    ),
+    gender = factor(gender),
+    
+    # Recode age
+    age = ifelse(qd7 == -99, NA, qd7),
+    
+    # Recode region into North, Centre, South & Islands
+    region = case_when(
+      qd2 %in% c(1, 2) ~ "North",
+      qd2 == 3 ~ "Centre",
+      qd2 %in% c(4, 5) ~ "South & Islands",
+      TRUE ~ NA_character_
+    ),
+    region = factor(region),
+    
+    # Recode education
+    education = case_when(
+      qd9 %in% c(1, 2) ~ "University",
+      qd9 %in% c(3, 4, 5) ~ "High school",
+      qd9 %in% c(6, 7, 8) ~ "Middle school",
+      qd9 %in% c(9, 10) ~ "Primary or less",
+      TRUE ~ NA_character_
+    ),
+    education = factor(education, levels = c("Primary or less", "Middle school", "High school", "University"), ordered = TRUE),
+    
+    # Recode work situation
+    work_situation = case_when(
+      qd10 %in% c(1, 2, 3) ~ "Employed",
+      qd10 %in% c(4, 5, 7, 8) ~ "Not in labor force",
+      qd10 == 6 ~ "Retired",
+      qd10 == 9 ~ "Student",
+      qd10 == 10 ~ "Other",
+      TRUE ~ NA_character_
+    ),
+    work_situation = factor(work_situation)
+  ) %>%
+  # Remove rows with NA in key variables
+  filter(!is.na(income), !is.na(gender), !is.na(age), !is.na(region), !is.na(education), !is.na(work_situation))
+```
+
+### Multiple linear regression
+
+```{r}
+# Multiple linear regression
+mlr_df <- lm(digital_literacy_score ~ age + education + income + gender + region + work_situation, data = df_2022)
+
+# Summary of the model
+summary(mlr_df)
+
+# Tidy summary for easier interpretation
+tidy_model <- tidy(mlr_df)
+```
+
+```{r}
+# Visualize coefficients
+ggplot(tidy_model, aes(x = reorder(term, estimate), y = estimate)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.2) +
+  coord_flip() +
+  labs(title = "Demographic Factors Influencing Digital Financial Literacy",
+       x = "Factors", y = "Estimated Effect on Digital Financial Literacy Score")
+```
+
+### ANOVA
+
+```{r}
+# ANOVA for categorical variables
+anova_results <- list(
+  income = aov(digital_literacy_score ~ income, data = df_2022),
+  education = aov(digital_literacy_score ~ education, data = df_2022),
+  region = aov(digital_literacy_score ~ region, data = df_2022),
+  work_situation = aov(digital_literacy_score ~ work_situation, data = df_2022)
+)
+
+# Print ANOVA summaries
+lapply(anova_results, summary)
+```
+
+### Ordinal logistic regression
+
+```{r}
+# Recode digital risk perception into ordinal categories
+df_2022 <- df_2022 %>%
+  mutate(
+    digital_risk_perception = case_when(
+      qs4_1 == 1 ~ "Very High",
+      qs4_1 == 2 ~ "High",
+      qs4_1 == 3 ~ "Medium",
+      qs4_1 == 4 ~ "Low",
+      qs4_1 == 5 ~ "Very Low",
+      TRUE ~ NA_character_
+    ),
+    digital_risk_perception = factor(digital_risk_perception, 
+                                     levels = c("Very Low", "Low", "Medium", "High", "Very High"),
+                                     ordered = TRUE)
+  )
+
+# Fit the ordinal logistic regression model
+model_risk <- polr(digital_risk_perception ~ digital_literacy_score + 
+                   education + income + age + gender + region, 
+                   data = df_2022, Hess = TRUE)
+
+# Model summary
+summary(model_risk)
+
+# Tidy output of the model
+tidy_model <- tidy(model_risk)
+print(tidy_model)
+
+# Calculate and print odds ratios with confidence intervals
+odds_ratios <- exp(coef(model_risk))
+ci <- exp(confint(model_risk))
+odds_ratios_table <- cbind(OR = odds_ratios, ci)
+print(odds_ratios_table)
+
+# Optional: Create a formatted table of odds ratios
+library(knitr)
+kable(odds_ratios_table, digits = 3, caption = "Odds Ratios with 95% Confidence Intervals")
+```
+
+```{r}
+# Create new data for predictions
+new_data <- data.frame(
+  digital_literacy_score = seq(
+    min(df_2022$digital_literacy_score, na.rm = TRUE),
+    max(df_2022$digital_literacy_score, na.rm = TRUE),
+    length.out = 100
+  ),
+  education = "High school",  # Mode or reference level
+  income = "Medium",          # Mode or reference level
+  age = mean(df_2022$age, na.rm = TRUE),
+  gender = "Female",          # Mode or reference level
+  region = "North"            # Mode or reference level
+)
+
+# Predict probabilities
+predicted_probs <- predict(model_risk, newdata = new_data, type = "probs")
+
+# Prepare data for plotting
+plot_data <- cbind(new_data, predicted_probs)
+plot_data_long <- pivot_longer(plot_data, 
+                               cols = c("Very Low", "Low", "Medium", "High", "Very High"),
+                               names_to = "risk_level", 
+                               values_to = "probability")
+
+# Plot predicted probabilities
+ggplot(plot_data_long, aes(x = digital_literacy_score, y = probability, color = risk_level)) +
+  geom_line() +
+  labs(title = "Predicted Probabilities of Digital Risk Perception",
+       x = "Digital Literacy Score",
+       y = "Probability",
+       color = "Risk Level") +
+  theme_minimal()
+
+# Visualize the effect of digital literacy score on risk perception
+plot(effect("digital_literacy_score", model_risk))
+```
